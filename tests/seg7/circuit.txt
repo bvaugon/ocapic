@@ -1,0 +1,16 @@
+###########################################################################
+##                                                                       ##
+##                                OCaPIC                                 ##
+##                                                                       ##
+##                             Benoit Vaugon                             ##
+##                                                                       ##
+##    This file is distributed under the terms of the CeCILL license.    ##
+##    See file ../../LICENSE-en.                                         ##
+##                                                                       ##
+###########################################################################
+
+window width=200 height=100 bgcolor=plum title="7 segments"
+
+7segment x=40  y=50 a=RB0 b=RB1 c=RB2 d=RB3 e=RB4 f=RB5 g=RB6 p=RB7 common=RA2 bgcolor=lightblue    color=green
+7segment x=100 y=50 a=RB0 b=RB1 c=RB2 d=RB3 e=RB4 f=RB5 g=RB6 p=RB7 common=RA1 bgcolor=antiquewhite color=red
+7segment x=160 y=50 a=RB0 b=RB1 c=RB2 d=RB3 e=RB4 f=RB5 g=RB6 p=RB7 common=RA0 bgcolor=lightgreen   color=blue

@@ -1,0 +1,128 @@
+PORTA  RA0 RA1 RA2 RA3 RA4 RA5 RA6 RA7 
+PORTB  RB0 RB1 RB2 RB3 RB4 RB5 RB6 RB7 
+OVDCONS  POUT0 POUT1 POUT2 POUT3 POUT4 POUT5 - - 
+OVDCOND  POVD0 POVD1 POVD2 POVD3 POVD4 POVD5 - - 
+DTCON  DT0 DT1 DT2 DT3 DT4 DT5 DTPS0 DTPS1 
+PWMCON1  OSYNC UDIS - SEVTDIR SEVOPS0 SEVOPS1 SEVOPS2 SEVOPS3 
+PWMCON0  PMOD0 PMOD1 PMOD2 - PWMEN0 PWMEN1 PWMEN2 - 
+SEVTCMPH  - - - - - - - -
+SEVTCMPL  - - - - - - - -
+LATA  LATA0 LATA1 LATA2 LATA3 LATA4 - LATA6 LATA7 
+LATB  LATB0 LATB1 LATB2 LATB3 LATB4 LATB5 LATB6 LATB7 
+FLTCONFIG  FLTAEN FLTAMOD FLTAS - - - - BRFEN 
+PDC2H  - - - - - - - -
+PDC2L  - - - - - - - -
+PDC1H  - - - - - - - -
+PDC1L  - - - - - - - -
+PDC0H  - - - - - - - -
+PDC0L  - - - - - - - -
+TRISA  TRISA0 TRISA1 TRISA2 TRISA3 TRISA4 - TRISA6 TRISA7 
+TRISB  TRISB0 TRISB1 TRISB2 TRISB3 TRISB4 TRISB5 TRISB6 TRISB7 
+--
+PTPERH  - - - - - - - -
+PTPERL  - - - - - - - -
+PTMRH  - - - - - - - -
+PTMRL  - - - - - - - -
+PTCON1  - - - - - - PTDIR PTEN 
+PTCON0  PTMOD0 PTMOD1 PTCKPS0 PTCKPS1 PTOPS0 PTOPS1 PTOPS2 PTOPS3 
+OSCTUNE  TUN0 TUN1 TUN2 TUN3 TUN4 - PLLEN INTSRC 
+--
+PIE1  TMR1IE CMP0IE CMP1IE CMP2IE TXIE RCIE ADIE - 
+PIR1  TMR1IF CMP0IF CMP1IF CMP2IF TXIF RCIF ADIF - 
+IPR1  TMR1IP CMP0IP CMP1IP CMP2IP TXIP RCIP ADIP - 
+PIE2  - - LVDIE - EEIE - - OSCFIE 
+PIR2  - - LVDIF - EEIF - - OSCFIF 
+IPR2  - - LVDIP - EEIP - - OSCFIP 
+PIE3  - - - - PTIE - - - 
+PIR3  - - - - PTIF - - - 
+IPR3  - - - - PTIP - - - 
+EECON1  RD WR WREN WRERR FREE - CFGS EEPGD 
+EECON2  - - - - - - - -
+EEDATA  - - - - - - - -
+EEADR  - - - - - - - -
+--
+RCSTA  RX9D OERR FERR ADEN CREN SREN RX9 SPEN 
+TXSTA  TX9D TRMT BRGH SENDB SYNC TXEN TX9 CSRC 
+TXREG  - - - - - - - -
+RCREG  - - - - - - - -
+SPBRG  - - - - - - - -
+SPBRGH  - - - - - - - -
+--
+--
+--
+CMCON  CMEN0 CMEN1 CMEN2 - - C0OUT C1OUT C2OUT 
+CVRCON  CVR0 CVR1 CVR2 CVR3 CVREF CVRR - CVREN 
+--
+--
+BAUDCTL  ABDEN WUE - BRG16 SCKP - RCIDL ABDOVF 
+--
+--
+--
+--
+--
+--
+--
+ADCON2  ADCS0 ADCS1 ADCS2 ACQT0 ACQT1 ACQT2 - ADFM 
+ADCON1  PCFG0 PCFG1 PCFG2 PCFG3 VCFG0 - - - 
+ADCON0  ADON GO CHS0 CHS1 - - - SEVTEN 
+ADRES  - - - - - - - -
+ADRESH  - - - - - - - -
+--
+--
+--
+--
+--
+--
+--
+--
+T1CON  TMR1ON TMR1CS NOT_T1SYNC T1OSCEN T1CKPS0 T1CKPS1 T1RUN RD16 
+TMR1L  - - - - - - - -
+TMR1H  - - - - - - - -
+RCON  NOT_BOR NOT_POR NOT_PD NOT_TO NOT_RI - SBOREN IPEN 
+WDTCON  SWDTEN - - - - - - - 
+LVDCON  LVDL0 LVDL1 LVDL2 LVDL3 LVDEN IRVST - - 
+OSCCON  SCS0 SCS1 FLTS OSTS IRCF0 IRCF1 IRCF2 IDLEN 
+--
+T0CON  T0PS0 T0PS1 T0PS2 PSA T0SE T0CS T016BIT TMR0ON 
+TMR0L  - - - - - - - -
+TMR0H  - - - - - - - -
+STATUS  C DC Z OV N - - - 
+FSR2L  - - - - - - - -
+FSR2H  - - - - - - - -
+PLUSW2  - - - - - - - -
+PREINC2  - - - - - - - -
+POSTDEC2  - - - - - - - -
+POSTINC2  - - - - - - - -
+INDF2  - - - - - - - -
+BSR  - - - - - - - -
+FSR1L  - - - - - - - -
+FSR1H  - - - - - - - -
+PLUSW1  - - - - - - - -
+PREINC1  - - - - - - - -
+POSTDEC1  - - - - - - - -
+POSTINC1  - - - - - - - -
+INDF1  - - - - - - - -
+WREG  - - - - - - - -
+FSR0L  - - - - - - - -
+FSR0H  - - - - - - - -
+PLUSW0  - - - - - - - -
+PREINC0  - - - - - - - -
+POSTDEC0  - - - - - - - -
+POSTINC0  - - - - - - - -
+INDF0  - - - - - - - -
+INTCON3  INT1IF INT2IF INT3IF INT1IE INT2IE INT3IE INT1IP INT2IP 
+INTCON2  RBIP INT3IP TMR0IP INTEDG3 INTEDG2 INTEDG1 INTEDG0 NOT_RBPU 
+INTCON  RBIF INT0IF TMR0IF RBIE INT0IE TMR0IE PEIE GIE 
+PROD  - - - - - - - -
+PRODH  - - - - - - - -
+TABLAT  - - - - - - - -
+TBLPTR  - - - - - - - -
+TBLPTRH  - - - - - - - -
+TBLPTRU  - - - - - - - -
+PC  - - - - - - - -
+PCLATH  - - - - - - - -
+PCLATU  - - - - - - - -
+STKPTR  SP0 SP1 SP2 SP3 SP4 - STKUNF STKOVF 
+TOS  - - - - - - - -
+TOSH  - - - - - - - -
+TOSU  - - - - - - - -

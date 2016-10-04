@@ -1,0 +1,135 @@
+.TH Pic 3
+.SH NAME
+Pic \- Low level PIC interface
+.SH Module
+Module   Pic
+.SH Documentation
+.sp
+Module
+.BI "Pic"
+ : 
+.B sig  end
+
+.sp
+Low level PIC interface
+.sp
+Pic Special Function Registers representation and interruption
+handling\&.
+.sp
+
+.sp
+
+.sp
+.sp
+.I type reg 
+=
+ | PORTA
+ | PORTB
+ | PORTC
+ | ...
+ 
+.sp
+Type of Special Function Registers\&.
+.sp
+
+.sp
+.I type bit 
+=
+ | RA0
+ | RA1
+ | RA2
+ | ...
+ 
+.sp
+Type of bits of Special Function Registers\&.
+.sp
+
+.sp
+
+.I val read_reg 
+: 
+.B reg -> int
+.sp
+
+\fBread_reg reg\fR reads the value of the Special Function Register
+\fBreg\fR\&.  Returned value is between 0 and 255\&.
+.sp
+
+.sp
+
+.I val write_reg 
+: 
+.B reg -> int -> unit
+.sp
+
+\fBwrite_reg reg value\fR  writes \fBvalue\fR in the Special Function
+Register \fBreg\fR\&. \fBvalue\fR should be between 0 and 255\&.
+.sp
+
+.sp
+
+.I val set_bit 
+: 
+.B bit -> unit
+.sp
+Sets a Special Function Register bit\&.
+.sp
+
+.sp
+
+.I val clear_bit 
+: 
+.B bit -> unit
+.sp
+Clears a Special Function Register bit\&.
+.sp
+
+.sp
+
+.I val test_bit 
+: 
+.B bit -> bool
+.sp
+Reads a Special Function Register bit\&. Returns \fBtrue\fR if the bit
+is set and \fBfalse\fR if the bit is clear\&.
+.sp
+
+.sp
+
+.I val tris_of_port 
+: 
+.B reg -> reg
+.sp
+Convert a port to its configuration register (\fBPORTA\fR \-> \fBTRISA\fR,
+\&.\&.\&.)\&.
+.sp
+
+.sp
+
+.I val tris_of_pin 
+: 
+.B bit -> bit
+.sp
+Convert a pin to its configuration bit (\fBRA0\fR \-> \fBTRISA\fR\&.\fB0\fR,
+\&.\&.\&.)\&.
+.sp
+
+.sp
+
+.I val set_interruption_handler 
+: 
+.B (bit -> unit) -> unit
+.sp
+Register the interruption handler\&.
+.sp
+
+.sp
+
+.I val clear_interruption_handler 
+: 
+.B unit -> unit
+.sp
+Remove the interruption handler\&.
+.sp
+
+.sp

@@ -1,0 +1,85 @@
+                   Installing OCaPIC on a Unix machine
+                   -----------------------------------
+
+PREREQUISITES
+
+* The OCaml standard distribution
+
+* A C compiler (ex: the GNU C compiler `gcc')
+
+* A PIC assembler (ex: `gpasm' from the `gputils' package)
+
+
+INSTALLATION INSTRUCTIONS
+
+1- Configure the system. From the top directory, do:
+
+        ./configure
+
+This generates the two configuration files "Makefile.conf" and "config.ml"
+in the ./etc/ subdirectory.
+
+The "configure" script accepts the following options:
+
+-bindir <dir>                   (default: /usr/local/bin)
+        Directory where the binaries will be installed.
+
+-libdir <dir>                   (default: /usr/local/lib/ocapic)
+        Directory where the OCaml library PIC tools will be installed.
+
+-mandir <dir>                   (default: /usr/local/man)
+        Directory where the manual pages will be installed.
+
+-prefix <dir>                   (default: /usr/local)
+        Set bindir, libdir and mandir to
+        <dir>/bin, <dir>/lib/ocapic, <dir>/man respectively.
+
+-cc <C compiler and options>    (default: gcc if available, cc otherwise)
+        C compiler to use for building the system.
+
+-pics <regexp>                  (default: 18f4620)
+        Set OCaml modules representing PICs to generate in the library.
+        The value of <regexp> can be '18f4685' or '18f46.*' for an exemple.
+        Warning: compilation time (at step 2) of PIC modules can be very long.
+
+Example:
+
+  Standard installation in /usr/{bin,lib,man} instead of /usr/local:
+    ./configure -prefix /usr
+
+
+2- From the top directory, do:
+
+        make
+
+This builds the bytecode adapter and the new standard library in local
+directories: ./bin/ and ./lib/.
+
+
+3- You can now install the OCaPIC system. This will create the
+following commands (in the binary directory selected during
+autoconfiguration):
+
+        ocapic         the OCaml compiler linked to the new library
+        bc2asm         the OCaml bytecode adapter
+
+From the top directory, become superuser and do:
+
+        umask 022       # make sure to give read & execute permission to all
+        make install
+
+4- Installation is complete. Time to clean up. From the toplevel
+directory, do:
+
+        make clean
+
+
+UNINSTALLATION INSTRUCTIONS
+
+1- If configuration files (./etc/Makefile.conf and ./etc/config.ml)
+have been lost, run again ./configure from the top directory with the
+same options as at step 1 of installation.
+
+2- From the top directory, become superuser and do:
+
+        make uninstall

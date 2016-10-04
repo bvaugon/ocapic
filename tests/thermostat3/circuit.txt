@@ -1,0 +1,18 @@
+###########################################################################
+##                                                                       ##
+##                                OCaPIC                                 ##
+##                                                                       ##
+##                             Benoit Vaugon                             ##
+##                                                                       ##
+##    This file is distributed under the terms of the CeCILL license.    ##
+##    See file ../../LICENSE-en.                                         ##
+##                                                                       ##
+###########################################################################
+
+window width=455 height=260 title="Thermostat"
+
+button x=144 y=60 width=25 height=25 label="-" pin=RE1
+button x=227 y=40 width=25 height=25 label="G" pin=RE0
+button x=310 y=60 width=25 height=25 label="+" pin=RE2
+
+lcd x=10 y=105 column_nb=16 line_nb=2 e=RD7 rs=RD5 rw=RD6 bus=PORTB

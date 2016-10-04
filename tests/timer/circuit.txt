@@ -1,0 +1,21 @@
+###########################################################################
+##                                                                       ##
+##                                OCaPIC                                 ##
+##                                                                       ##
+##                             Benoit Vaugon                             ##
+##                                                                       ##
+##    This file is distributed under the terms of the CeCILL license.    ##
+##    See file ../../LICENSE-en.                                         ##
+##                                                                       ##
+###########################################################################
+
+window width=270 height=220 bgcolor=black title="Timer"
+
+button x=85 y=40 width=40 color=black label="START" pin=RB0
+button x=135 y=55 width=20 height=20 label="+" pin=RB1
+button x=135 y=25 width=20 height=20 label="-" pin=RB2
+
+led x=175 y=55 pin=RB3 color=green
+led x=175 y=25 pin=RB3 inverse=true
+
+lcd x=10 y=100 column_nb=8 line_nb=1 e=RD0 rs=RD2 rw=RD1 bus=PORTC

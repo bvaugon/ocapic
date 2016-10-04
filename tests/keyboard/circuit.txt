@@ -1,0 +1,31 @@
+###########################################################################
+##                                                                       ##
+##                                OCaPIC                                 ##
+##                                                                       ##
+##                             Benoit Vaugon                             ##
+##                                                                       ##
+##    This file is distributed under the terms of the CeCILL license.    ##
+##    See file ../../LICENSE-en.                                         ##
+##                                                                       ##
+###########################################################################
+
+window width=270 height=270 title="Keyboard"
+
+lcd x=10 y=150 column_nb=8 line_nb=1 e=RD0 rs=RD2 rw=RD1 bus=PORTC
+
+button x=90  y=30  width=25 height=25 label="." pin_out=RB0 pin_in=RB4
+button x=120 y=30  width=25 height=25 label="0" pin_out=RB0 pin_in=RB5
+button x=150 y=30  width=25 height=25 label="=" pin_out=RB0 pin_in=RB6
+button x=180 y=30  width=25 height=25 label="+" pin_out=RB0 pin_in=RB7
+button x=90  y=60  width=25 height=25 label="1" pin_out=RB1 pin_in=RB4
+button x=120 y=60  width=25 height=25 label="2" pin_out=RB1 pin_in=RB5
+button x=150 y=60  width=25 height=25 label="3" pin_out=RB1 pin_in=RB6
+button x=180 y=60  width=25 height=25 label="-" pin_out=RB1 pin_in=RB7
+button x=90  y=90  width=25 height=25 label="4" pin_out=RB2 pin_in=RB4
+button x=120 y=90  width=25 height=25 label="5" pin_out=RB2 pin_in=RB5
+button x=150 y=90  width=25 height=25 label="6" pin_out=RB2 pin_in=RB6
+button x=180 y=90  width=25 height=25 label="*" pin_out=RB2 pin_in=RB7
+button x=90  y=120 width=25 height=25 label="7" pin_out=RB3 pin_in=RB4
+button x=120 y=120 width=25 height=25 label="8" pin_out=RB3 pin_in=RB5
+button x=150 y=120 width=25 height=25 label="9" pin_out=RB3 pin_in=RB6
+button x=180 y=120 width=25 height=25 label="/" pin_out=RB3 pin_in=RB7

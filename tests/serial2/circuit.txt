@@ -1,0 +1,20 @@
+Serial-port:
+   1~  [-]
+   2~  MAX232.7
+   3~  MAX232.8
+
+MAX232:
+   1~  +1µF-  ~3
+   2~  +1µF-  [-]
+   4~  +1µF-  ~5
+   6~  -1µF+  [-]
+   7~  Serial.2
+   8~  Serial.3
+   9~  PIC.RC7/RX
+  10~  PIC.RC6/TX
+  15~  [-]
+  16~  [+]
+
+PIC:
+ RC6/TX~  MAX232.10
+ RC7/RX~  MAX232.9

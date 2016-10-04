@@ -1,0 +1,40 @@
+#! /bin/bash
+###########################################################################
+##                                                                       ##
+##                                OCaPIC                                 ##
+##                                                                       ##
+##                             Benoit Vaugon                             ##
+##                                                                       ##
+##    This file is distributed under the terms of the CeCILL license.    ##
+##    See file ../LICENSE-en.                                            ##
+##                                                                       ##
+###########################################################################
+
+cd $(dirname "$0")
+
+VERSION=$(cat ../VERSION)
+DEST=ocapic-"$VERSION"
+
+rm -Rf "$DEST"
+
+for d in "$DEST" "$DEST/dist" "$DEST/etc" "$DEST/ocamlclean"; do
+    mkdir "$d"
+done
+
+for d in \
+    bin configure INSTALL lib LICENSE-fr LICENSE-en \
+    OCaml-LICENSE Makefile man src tests VERSION;
+do
+    cp -R ../"$d" "$DEST/"
+done
+
+cp ./distgen "$DEST/dist/"
+
+cp $(ls ../ocamlclean/ocamlclean-*.tar.bz2 -1 | sort -n | tail -n 1) \
+    "$DEST/ocamlclean/"
+
+tar jcf "$DEST.tar.bz2" "$DEST"
+
+rm -Rf "$DEST"
+
+echo "** Distribution $DEST.tar.bz2 created successfully **"

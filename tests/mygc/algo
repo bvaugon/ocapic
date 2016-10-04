@@ -1,0 +1,67 @@
+variables :
+  roots[] : tableau des racines
+  ind_root : indice courant dans les racines
+  nb_roots : nombre de racines
+  prec_bloc : adresse du bloc précédant
+  curr_bloc : adresse du bloc courant
+  copy_bloc : adresse de la copie du bloc courant
+  copy_ptr : adresse de la case où mettre l'adresse du bloc copié
+
+gc :
+  ind_root <- nb_roots;
+loop_roots:
+  ind_root --;
+  si ind_root = -1 alors return;
+  si roots[ind_root] est un ptr alors
+    curr_bloc <- roots[ind_root];
+    prec_bloc <- 0;
+    copy_ptr <- &roots[ind_root];
+    goto traitement_bloc;
+  sinon
+    goto loop_roots;
+
+traitement_bloc:
+  si curr_bloc.tag = 245 alors
+    *copy_ptr <- curr_bloc[0];
+    goto go_back;
+  sinon
+    copy_bloc <- allouer_bloc (curr_bloc.size);
+    copier_bloc (curr_bloc -> copy_bloc);
+    *copy_ptr <- copy_bloc;
+    curr_bloc.tag <- 245;
+    curr_bloc[0] <- copy_bloc;
+    si curr_bloc.size = 1 alors
+      si copy_bloc[0] est un ptr alors
+        copy_ptr <- &copy_bloc[0];
+        curr_bloc <- copy_bloc[0];
+        goto traitement_bloc;
+      sinon
+        goto go_back;
+    sinon
+      curr_bloc[1] <- prec_bloc;
+      goto begin_loop_bloc;
+
+go_back:
+  si prec_bloc = 0 alors
+    goto loop_roots;
+  sinon
+    curr_bloc <- prec_bloc;
+    copy_bloc <- prec_bloc[0];
+loop_bloc:
+  si curr_bloc.size = 0 alors
+    si prec_bloc = 0 alors
+      goto loop_roots;
+    sinon
+      tmp <- curr_bloc[1];
+      curr_bloc <- prec_bloc;
+      prec_bloc <- tmp;
+      goto loop_bloc;
+  sinon
+begin_loop_bloc:
+    curr_bloc.size --;
+    si copy_bloc[curr_bloc.size] est un ptr alors
+      copy_ptr <- &(copy_bloc[curr_bloc.size]);
+      curr_bloc <- curr_bloc[0];
+      goto traitement_bloc;
+    sinon
+      goto loop_bloc;
