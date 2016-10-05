@@ -112,6 +112,7 @@ uninstall:
 	-rm -f "$(LIBDIR)/"*.cmi
 	-rm -f "$(LIBDIR)/"*.cmo
 	-rm -Rf "$(LIBDIR)/extra"
+	-rm -Rf "$(LIBDIR)/spiclibs"
 	@for mod in $(MAN_3P_BASES); do \
 	  rm -f "$(MAN3DIR)/"$$mod.3p;	\
 	done
@@ -150,8 +151,8 @@ clean:
 	$(call clean, src/simulator)
 	$(call clean, src/ocapic)
 	$(call clean, src/ocasim)
-	$(call clean, lib)
 	$(call clean, lib/extra)
+	$(call clean, lib)
 	@if [ $(INSTALL_OCAMLCLEAN) = true ]; then \
             cd $(OCAMLCLEAN_DIRECTORY)/;           \
             make --no-print-directory clean;       \

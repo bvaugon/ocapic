@@ -106,7 +106,7 @@ void instr_loop(int input){
   }
 }
 
-void run_cmnd(char *cmnd){
+void run_cmnd(const char *cmnd){
   pid_t pid;
   int pipe2[2];
   if(pipe(pipe2) == -1)
@@ -114,7 +114,7 @@ void run_cmnd(char *cmnd){
   pid = fork();
   if(pid < 0) error("fork()");
   if(pid == 0){
-    char *args[4];
+    const char* args[4];
     if(close(pipe2[0]) == -1)
       error("close()");
     if(dup2(pipe2[1], STDOUT_FILENO) == -1)
@@ -124,7 +124,7 @@ void run_cmnd(char *cmnd){
     args[1] = "-c";
     args[2] = cmnd;
     args[3] = NULL;
-    execv("/bin/bash", args);
+    execv("/bin/bash", (char * const *) args);
   }else{
     cmnd_pid = pid;
     signals();
@@ -156,20 +156,20 @@ CAMLprim value caml_sys_get_argv(value unit);
 void init_simulator(void){
   int i, j;
   int argc;
-  char **argv;
+  const char **argv;
   int *ins;
   int is_slow = 0;
   static int test_reinit = 0;
   if(test_reinit) return;
   test_reinit = 1;
 
-  argv = ((char ***) caml_sys_get_argv(Val_unit))[1];
+  argv = ((const char ***) caml_sys_get_argv(Val_unit))[1];
   argc = Wosize_val((value) argv);
 
   nb_proc = argc - 1;
 
   for(i = nb_proc ; i > 0 ; i --){
-    char *arg = argv[i];
+    const char *arg = argv[i];
     int len = strlen(arg);
     if(len > 3 && arg[len-4]=='.' && arg[len-3]=='h' && arg[len-2]=='e'
        && arg[len-1]=='x'){
@@ -227,7 +227,7 @@ void init_simulator(void){
 
   for(i = 1, j = 0 ; i < argc ; i ++){
     pid_t pid;
-    char *arg = argv[i];
+    const char *arg = argv[i];
     if(arg[0] != '\0'){
       pid = fork();
       if(pid < 0) error("fork()");

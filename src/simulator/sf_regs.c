@@ -40,9 +40,9 @@ static int is_slow;
 
 void init_regs(int n, int slow){
   int i;
-  regs = alloc_shm(128 * sizeof(unsigned char));
-  analogs = alloc_shm(16 * sizeof(unsigned int));
-  sync_counter = alloc_shm(sizeof(int));
+  regs = (unsigned char *) alloc_shm(128 * sizeof(unsigned char));
+  analogs = (unsigned int *) alloc_shm(16 * sizeof(unsigned int));
+  sync_counter = (int *) alloc_shm(sizeof(int));
   *sync_counter = 0;
   is_slow = slow;
   sem_regs = create_sem(1);
