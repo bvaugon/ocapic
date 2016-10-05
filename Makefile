@@ -107,12 +107,12 @@ uninstall:
 	-rm -f "$(LIBDIR)/stdlib.cma"
 	-rm -f "$(LIBDIR)/libcamlrun.a"
 	-rm -f "$(LIBDIR)/lcd_cgrom.txt"
+	-rm -f "$(LIBDIR)/opam.config"
 	-rm -f "$(LIBDIR)/"*.ml
 	-rm -f "$(LIBDIR)/"*.mli
 	-rm -f "$(LIBDIR)/"*.cmi
 	-rm -f "$(LIBDIR)/"*.cmo
 	-rm -Rf "$(LIBDIR)/extra"
-	-rm -Rf "$(LIBDIR)/spiclibs"
 	@for mod in $(MAN_3P_BASES); do \
 	  rm -f "$(MAN3DIR)/"$$mod.3p;	\
 	done
