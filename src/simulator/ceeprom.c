@@ -27,7 +27,7 @@ static void caml_eeprom_fputc(unsigned char c){
 }
 
 static unsigned char caml_eeprom_fgetc(void){
-  unsigned char c;
+  int c;
   if((c = fgetc(eeprom_file)) == EOF){
     fprintf(stderr, "failure: fgetc()\n");
     exit(1);
@@ -69,7 +69,7 @@ static void caml_check_eeprom_file(void){
   for(i = 0 ; i < EEPROM_SIZE / 8 ; i ++){
     int j;
     for(j = 0 ; j < 8 ; j ++){
-      unsigned char l, h;
+      int l, h;
       if((h = fgetc(eeprom_file)) == EOF || (l = fgetc(eeprom_file)) == EOF){
         fprintf(stderr, "failure: invalid eeprom file\n");
         exit(1);
