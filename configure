@@ -219,11 +219,11 @@ define clean
 endef
 define capitalize
  \$(shell echo \$1 | cut -c1 | tr [:lower:] [:upper:])\$(shell echo \$1 \
-| cut -c2-\$)
+| cut -c2-\$2)
 endef
 define uncapitalize
  \$(shell echo \$1 | cut -c1 | tr [:upper:] [:lower:])\$(shell echo \$1 \
-| cut -c2-\$)
+| cut -c2-\$2)
 endef
 
 " > etc/Makefile.conf
