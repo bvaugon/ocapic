@@ -238,15 +238,15 @@ let format fmt n =
                   match nstr.[0] with
                     | ('-' as c) | ('+' as c) ->
                         Bytes.set res 0 c;
-                        Bytes.blit nstr 1 res (fsz - nsz + 1) (nsz - 1);
+                        Bytes.blit_string nstr 1 res (fsz - nsz + 1) (nsz - 1);
                         Bytes.unsafe_to_string res
                     | _ ->
-                        Bytes.blit nstr 0 res (fsz - nsz) nsz;
+                        Bytes.blit_string nstr 0 res (fsz - nsz) nsz;
                         Bytes.unsafe_to_string res
               else
                 let res = Bytes.make fsz ' ' in
                 let ofs = if minus then 0 else fsz - nsz in
-                  Bytes.blit nstr 0 res ofs nsz;
+                  Bytes.blit_string nstr 0 res ofs nsz;
                   Bytes.unsafe_to_string res
             else
               nstr
