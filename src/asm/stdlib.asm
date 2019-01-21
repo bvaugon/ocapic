@@ -16,7 +16,11 @@
 ;;;;;;;;                                   ;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+#ifdef caml_useprim_caml_blit_bytes
+#define caml_useprim_caml_blit_string
+#endif
 #ifdef caml_useprim_caml_blit_string
+caml_blit_bytes:
 caml_blit_string:
 	;; ACCU = src
 	;; [0x2]:[0x1] = srcoff
@@ -58,7 +62,11 @@ caml_blit_string_loop_test:
 	return
 #endif
 
+#ifdef caml_useprim_caml_ml_bytes_length
+#define caml_useprim_caml_ml_string_length
+#endif
 #ifdef caml_useprim_caml_ml_string_length
+caml_ml_bytes_length:
 caml_ml_string_length:
 	;; ACCU = str
 	movff	ACCUL, FSR0L	; FSR0 <- ACCU
@@ -85,7 +93,11 @@ caml_ml_string_length:
 	return
 #endif
 
+#ifdef caml_useprim_caml_fill_bytes
+#define caml_useprim_caml_fill_string
+#endif
 #ifdef caml_useprim_caml_fill_string
+caml_fill_bytes:
 caml_fill_string:
 	;; ACCU = str
 	;; [0x2]:[0x1] = start
@@ -121,6 +133,7 @@ caml_fill_string_miloop:
 #ifndef caml_useprim_caml_raise_ia_string_create
 #define caml_useprim_caml_raise_ia_string_create
 #endif
+caml_create_bytes:
 caml_create_string:
 	;; ACCU = len
 	rrcf	ACCUH, W	; STATUS.C ignored
@@ -156,10 +169,14 @@ caml_create_string:
 	return
 #endif
 
+#ifdef caml_useprim_caml_bytes_get
+#define caml_useprim_caml_string_get
+#endif
 #ifdef caml_useprim_caml_string_get
 #ifndef caml_useprim_caml_raise_ia_index_out_of_bounds_string
 #define caml_useprim_caml_raise_ia_index_out_of_bounds_string
 #endif
+caml_bytes_get:
 caml_string_get:
 	;; ACCU = str
 	;; [0x2]:[0x1] = ind
@@ -206,10 +223,14 @@ caml_string_get_last_char:
 	return
 #endif
 
+#ifdef caml_useprim_caml_bytes_set
+#define caml_useprim_caml_string_set
+#endif
 #ifdef caml_useprim_caml_string_set
 #ifndef caml_useprim_caml_raise_ia_index_out_of_bounds_string
 #define caml_useprim_caml_raise_ia_index_out_of_bounds_string
 #endif
+caml_bytes_set:
 caml_string_set:
 	;; ACCU = str
 	;; [0x2]:[0x1] = ind
