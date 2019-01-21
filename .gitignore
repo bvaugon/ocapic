@@ -29,6 +29,7 @@ _build/
 /tests/arith/div
 /tests/arith/mod
 /tests/arith/mul
+/tests/byte/byte
 /tests/chargen/chargen
 /tests/charger/charger
 /tests/eeprom/test
