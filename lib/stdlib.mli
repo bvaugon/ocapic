@@ -13,6 +13,8 @@
 (*                                                                        *)
 (**************************************************************************)
 
+module Pervasives : sig
+
 (** The initially opened module.
 
    This module provides the basic operations over the built-in types
@@ -729,7 +731,8 @@ type ('a,'b) result = Ok of 'a | Error of 'b
 *)
 
 type ('a, 'b, 'c, 'd, 'e, 'f) format6 =
-  ('a, 'b, 'c, 'd, 'e, 'f) CamlinternalFormatBasics.format6
+  ('a, 'b, 'c, 'd, 'e, 'f) CamlinternalFormatBasics.format6 =
+  Format of ('a, 'b, 'c, 'd, 'e, 'f) CamlinternalFormatBasics.fmt * string
 
 type ('a, 'b, 'c, 'd) format4 = ('a, 'b, 'c, 'c, 'c, 'd) format6
 
@@ -797,3 +800,42 @@ val output_byte : out_channel -> int -> unit
    256. *)
 
 val output_int : out_channel -> int -> unit
+
+end
+
+include module type of struct include Pervasives end
+  
+module ArrayLabels        = Stdlib__arrayLabels
+module Array              = Stdlib__array
+module Char               = Stdlib__char
+module List               = Stdlib__list
+module BytesLabels        = Stdlib__bytesLabels
+module Bytes              = Stdlib__bytes
+module Sys                = Stdlib__sys
+module Map                = Stdlib__map
+module Eeprom             = Stdlib__eeprom
+module Gc                 = Stdlib__gc
+module Genlex             = Stdlib__genlex
+module String             = Stdlib__string
+module Int32              = Stdlib__int32
+module Int64              = Stdlib__int64
+module Random             = Stdlib__random
+module Hashtbl            = Stdlib__hashtbl
+module Lazy               = Stdlib__lazy
+module ListLabels         = Stdlib__listLabels
+module MoreLabels         = Stdlib__moreLabels
+module Nap                = Stdlib__nap
+module Nativeint          = Stdlib__nativeint
+module Obj                = Stdlib__obj
+module Oo                 = Stdlib__oo
+module Queue              = Stdlib__queue
+module Serial             = Stdlib__serial
+module Set                = Stdlib__set
+module Sort               = Stdlib__sort
+module Stack              = Stdlib__stack
+module StdLabels          = Stdlib__stdLabels
+module Stream             = Stdlib__stream
+module StringLabels       = Stdlib__stringLabels
+module Uchar              = Stdlib__uchar
+module Buffer             = Stdlib__buffer
+module Printf             = Stdlib__printf

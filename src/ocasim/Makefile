@@ -25,8 +25,8 @@ $(TARG): _build/$(BUILD)
 
 _build/$(BUILD): $(SRCS) $(CPATHS)
 	@rm -f $@
-	$(OCAMLBUILD) -cflags -thread -lflags	  \
-	  -thread,unix.cmxa,threads.cmxa $(COPTS) $(BUILD)
+	$(OCAMLBUILD) -cflags -thread,-g -lflags	  \
+	  -thread,unix.cmxa,threads.cmxa,-g $(COPTS) $(BUILD)
 
 test: $(TARG)
 	$(TARG) ../../tests/int3264/int3264.hex 'ocapic_dip40_simulator' \

@@ -60,7 +60,7 @@ let set_trace b = trace := b;;
 let print_instr code lstfile pc =
   if !trace then
     let pc2 = pc * 2 in
-    Printf.printf "0x%04X:    " pc2;
+    Printf.printf "[%s] 0x%04X:    " (get_time ()) pc2;
     begin match Lstfile.find_line pc2 lstfile with
       | None -> Instr.print stdout code.(pc)
       | Some line -> print_endline line

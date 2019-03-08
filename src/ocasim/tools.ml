@@ -80,7 +80,7 @@ let set_tblptr addr =
 (***)
 
 let read_program program addr =
-  assert (addr >= 0 && addr < Array.length program);
+  (try assert (addr >= 0 && addr < Array.length program) with exn -> Printf.printf "addr = %d, len = %d\n" addr (Array.length program); raise exn);
   let value = program.(addr) in
   assert (value >= 0 && value < 256);
   value

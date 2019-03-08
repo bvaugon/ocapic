@@ -58,8 +58,8 @@ and bc =
   | Vectlength
   | Getvectitem
   | Setvectitem
-  | Getstringchar
-  | Setstringchar
+  | Getbyteschar
+  | Setbyteschar
   | Branch of ptr
   | Branchif of ptr
   | Branchifnot of ptr
@@ -220,8 +220,8 @@ let parse read =
           | 79 ->  Vectlength
           | 80 ->  Getvectitem
           | 81 ->  Setvectitem
-          | 82 ->  Getstringchar
-          | 83 ->  Setstringchar
+          | 82 ->  Getbyteschar
+          | 83 ->  Setbyteschar
           | 84 ->  Branch (read_ptr ())
           | 85 ->  Branchif (read_ptr ())
           | 86 ->  Branchifnot (read_ptr ())
@@ -290,8 +290,9 @@ let parse read =
           | 143 -> Stop
           | 144 -> Event
           | 145 -> Break
-          | 146 ->  Reraise
-          | 147 ->  Raisenotrace
+          | 146 -> Reraise
+          | 147 -> Raisenotrace
+          | 148 -> Getbyteschar
           | _ -> failwith (Printf.sprintf "invalid opcode: %d" opcode)
       with End_of_file -> failwith "unexpected end of code section"
     in
@@ -383,8 +384,8 @@ let opcode_of_bc bc =
     | Vectlength -> 79
     | Getvectitem -> 80
     | Setvectitem -> 81
-    | Getstringchar -> 82
-    | Setstringchar -> 83
+    | Getbyteschar -> 82
+    | Setbyteschar -> 83
     | Branch _ -> 84
     | Branchif _ -> 85
     | Branchifnot _ -> 86
@@ -419,7 +420,7 @@ let opcode_of_bc bc =
     | Andint -> 115
     | Orint  -> 116
     | Xorint -> 117
-    | Lslint -> 119
+    | Lslint -> 118
     | Lsrint -> 119
     | Asrint -> 120
     | Eq  -> 121
@@ -493,8 +494,8 @@ let string_of_bc bc =
     | Vectlength        -> Printf.sprintf "VECTLENGTH"
     | Getvectitem       -> Printf.sprintf "GETVECTITEM"
     | Setvectitem       -> Printf.sprintf "SETVECTITEM"
-    | Getstringchar     -> Printf.sprintf "GETSTRINGCHAR"
-    | Setstringchar     -> Printf.sprintf "SETSTRINGCHAR"
+    | Getbyteschar      -> Printf.sprintf "GETBYTESCHAR"
+    | Setbyteschar      -> Printf.sprintf "SETBYTESCHAR"
     | Branch ptr        -> Printf.sprintf "BRANCH %d" ptr.pointed.new_addr
     | Branchif ptr      -> Printf.sprintf "BRANCHIF %d" ptr.pointed.new_addr
     | Branchifnot ptr   -> Printf.sprintf "BRANCHIFNOT %d" ptr.pointed.new_addr
@@ -709,8 +710,8 @@ let export_bc put_byte bc =
     | Vectlength ->          write_op 79;
     | Getvectitem ->         write_op 80;
     | Setvectitem ->         write_op 81;
-    | Getstringchar ->       write_op 82;
-    | Setstringchar ->       write_op 83;
+    | Getbyteschar ->        write_op 82;
+    | Setbyteschar ->        write_op 83;
     | Branch ptr ->          write_op 84; write_ptr ptr;
     | Branchif ptr ->        write_op 85; write_ptr ptr;
     | Branchifnot ptr ->     write_op 86; write_ptr ptr;

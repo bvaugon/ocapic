@@ -14,14 +14,18 @@ include ../etc/Makefile.conf
 # IGNORED: callback digest filename format lexing marshal parsing printexc
 #          scanf weak ephemeron arg complex
 
-STD_BASES := arrayLabels array char list bytesLabels bytes		\
-	obj camlinternalLazy						\
-	camlinternalMod sys map camlinternalOO eeprom			\
-	gc genlex string int32 int64 random hashtbl lazy		\
-	listLabels moreLabels nap nativeint				\
-	oo queue							\
-	serial set sort stack std_exit stdLabels stream stringLabels	\
-	uchar buffer camlinternalFormat printf
+STD_BASES := \
+  camlinternalFormatBasics stdlib                                   \
+  stdlib__arrayLabels stdlib__array stdlib__char stdlib__list       \
+  stdlib__bytesLabels stdlib__bytes stdlib__obj camlinternalLazy    \
+  camlinternalMod stdlib__sys stdlib__map camlinternalOO            \
+  stdlib__eeprom stdlib__gc stdlib__genlex stdlib__string           \
+  stdlib__int32 stdlib__int64 stdlib__random stdlib__hashtbl        \
+  stdlib__lazy stdlib__listLabels stdlib__moreLabels stdlib__nap    \
+  stdlib__nativeint stdlib__oo stdlib__queue stdlib__serial         \
+  stdlib__set stdlib__sort stdlib__stack std_exit stdlib__stdLabels \
+  stdlib__stream stdlib__stringLabels stdlib__uchar stdlib__buffer  \
+  camlinternalFormat stdlib__printf
 
 SPIC_BASES := lcd
 
@@ -47,18 +51,14 @@ SPIC_MANS := $(foreach base, $(SPIC_BASES), \
 
 STD_CMIS := $(STD_BASES:=.cmi)
 STD_CMOS := $(STD_BASES:=.cmo)
-STD_MANS := $(foreach base, $(STD_BASES), $(call capitalize, $(base)).3o)
+STD_MANS := $(foreach base, $(STD_BASES), $(call capitalize, $(base:stdlib__%=%)).3o)
 
-ALL_MANS := $(SPIC_MANS) $(STD_MANS) Pervasives.3o
+ALL_MANS := $(SPIC_MANS) $(STD_MANS) Stdlib.3o
 
 TARGETS := $(STD_CMIS) $(STD_CMOS) $(PICS_CMIS) $(PICS_CMOS) $(PICLIBS_CMAS) \
 	   $(SPIC_CMIS) $(SPIC_CMOS) $(ALL_MANS) $(ARCS)
 
 lib: $(TARGETS)
-
-##
-
-$(STD_CMOS) $(STD_CMIS): pervasives.cmi
 
 ##
 
@@ -68,14 +68,14 @@ camlinternalFormatBasics.cmo: camlinternalFormatBasics.ml camlinternalFormatBasi
 camlinternalFormatBasics.cmi: camlinternalFormatBasics.mli
 	$(OCAMLC) -nostdlib -nopervasives -c $<
 
-pervasives.cmo: pervasives.ml pervasives.cmi camlinternalFormatBasics.cmo camlinternalFormatBasics.cmi
-	$(OCAMLC) -nostdlib -nopervasives -c $<
+stdlib.cmo: stdlib.ml stdlib.cmi
+	$(OCAMLC) -absname -no-alias-deps -nostdlib -nopervasives -c -w -49 $<
 
-pervasives.cmi: pervasives.mli
-	$(OCAMLC) -nostdlib -nopervasives -c $<
+stdlib.cmi: stdlib.mli camlinternalFormatBasics.cmi
+	$(OCAMLC) -absname -no-alias-deps -nostdlib -nopervasives -c -w -49 $<
 
-stdlib.cma: $(STD_CMOS) camlinternalFormatBasics.cmo pervasives.cmo
-	$(OCAMLC) -nostdlib -a camlinternalFormatBasics.cmo pervasives.cmo $(STD_CMOS) -o stdlib.cma
+stdlib.cma: $(STD_CMOS)
+	$(OCAMLC) -nostdlib -a $(STD_CMOS) -o stdlib.cma
 
 libcamlrun.a: $(OBJS)
 	cp $(OCAMLSTDLIB)/libcamlrun.a ./
@@ -89,32 +89,53 @@ $(SELECTED_PICS:=/lcd.ml): $(SPIC_DIR)/lcd.ml
 $(SELECTED_PICS:=/lcd.mli): $(SPIC_DIR)/lcd.mli
 	cp $< $@
 
-%/lcd.cmo: %/lcd.ml %/lcd.cmi %/pic.cmi pervasives.cmi
+%/lcd.cmo: %/lcd.ml %/lcd.cmi
+	$(OCAMLC_UNSAFE) -nostdlib -I $* -c $< -o $@
+
+%/lcd.cmi: %/lcd.mli %/pic.cmi stdlib.cmi stdlib__string.cmi stdlib__obj.cmi
 	$(OCAMLC_UNSAFE) -nostdlib -I $* -c $<
 
-%/lcd.cmi: %/lcd.mli %/pic.cmi pervasives.cmi
-	$(OCAMLC_UNSAFE) -nostdlib -I $* -c $<
-
-%/pic.cmo: %/pic.ml pervasives.cmi
+%/pic.cmo: %/pic.ml stdlib.cmi
 	$(OCAMLC_UNSAFE) -nostdlib -c $<
 
-%/pic.cmi: %/pic.ml pervasives.cmi
+%/pic.cmi: %/pic.ml stdlib.cmi
 	$(OCAMLC_UNSAFE) -nostdlib -c $<
 
 %/piclib.cma: %/pic.cmo $(addprefix %/, $(SPIC_BASES:=.cmo))
 	$(OCAMLC_UNSAFE) -a $^ -o $@
 
-%Labels.cmo: %Labels.ml %Labels.cmi
-	$(OCAMLC_UNSAFE) -nostdlib -nolabels -c $<
+stdlib__%Labels.cmo: %Labels.ml stdlib__%Labels.cmi
+	$(OCAMLC_UNSAFE) -nostdlib -nolabels -c -w -3 $< -o $@
 
-%Labels.cmi: %Labels.mli
-	$(OCAMLC_UNSAFE) -nostdlib -nolabels -c $<
+stdlib__%Labels.cmi: %Labels.mli
+	$(OCAMLC_UNSAFE) -nostdlib -nolabels -c $< -o $@
 
-%.cmo: %.ml %.cmi
-	$(OCAMLC_UNSAFE) -nostdlib -c $<
+stdlib__%.cmo: %.ml stdlib__%.cmi
+	$(OCAMLC_UNSAFE) -absname -nostdlib -c $< -o $@
 
-%.cmi: %.mli
-	$(OCAMLC_UNSAFE) -nostdlib -c $<
+stdlib__%.cmi: %.mli
+	$(OCAMLC_UNSAFE) -absname -nostdlib -c $< -o $@
+
+stdlib__genlex.cmi: stdlib__stream.cmi
+stdlib__moreLabels.cmi: stdlib__hashtbl.cmi stdlib__map.cmi stdlib__set.cmi
+stdlib__oo.cmi: camlinternalOO.cmi
+stdlib__lazy.cmi: camlinternalLazy.cmi
+stdlib__printf.cmi: camlinternalFormat.cmi
+stdlib__arrayLabels.cmi: stdlib__array.cmi
+camlinternalMod.cmi: stdlib__obj.cmi
+camlinternalFormat.cmi: stdlib__buffer.cmi
+
+camlinternal%.cmi: camlinternal%.mli
+	$(OCAMLC_UNSAFE) -absname -nostdlib -c $<
+
+camlinternal%.cmo: camlinternal%.ml camlinternal%.cmi
+	$(OCAMLC_UNSAFE) -absname -nostdlib -c $<
+
+std_exit.cmi: std_exit.mli
+	$(OCAMLC_UNSAFE) -absname -nostdlib -c $<
+
+std_exit.cmo: std_exit.ml
+	$(OCAMLC_UNSAFE) -absname -nostdlib -c $<
 
 %.o: %.c
 	$(CC) -Wall --warn-error -O3 -c $< -o $@
@@ -144,5 +165,3 @@ clean:
 	done
 
 .PHONY: lib depend clean
-
-include .depend

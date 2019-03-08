@@ -185,12 +185,12 @@ let find_line pc2 lst = match lst with
   | None -> None
   | Some { table = table; flags = _ } ->
     let len = Array.length table in
-    if pc2 < 0 || pc2 > len || table.(pc2) = "" then None else Some table.(pc2)
+    if pc2 < 0 || pc2 >= len || table.(pc2) = "" then None else Some table.(pc2)
 ;;
 
 let find_flags pc2 lst = match lst with
   | None -> no_flags
   | Some { table = _; flags = flags } ->
     let len = Array.length flags in
-    if pc2 < 0 || pc2 > len then no_flags else flags.(pc2)
+    if pc2 < 0 || pc2 >= len then no_flags else flags.(pc2)
 ;;

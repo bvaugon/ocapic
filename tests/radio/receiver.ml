@@ -12,7 +12,7 @@
 open Sys;;
 open Pic;;
 
-let rec_pin  = RE3
+let rec_pin  = PORTE_RE3
 let out_pins = [| RB0; RB1; RB2; RB3; RB4; RB5; RB6; RB7; RC4; RC5; RC6; RC7; |]
 let out_nb   = Array.length out_pins
 

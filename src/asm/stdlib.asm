@@ -206,11 +206,11 @@ caml_string_get_last_char:
 	return
 #endif
 
-#ifdef caml_useprim_caml_string_set
+#ifdef caml_useprim_caml_bytes_set
 #ifndef caml_useprim_caml_raise_ia_index_out_of_bounds_string
 #define caml_useprim_caml_raise_ia_index_out_of_bounds_string
 #endif
-caml_string_set:
+caml_bytes_set:
 	;; ACCU = str
 	;; [0x2]:[0x1] = ind
 	;; [0x4]:[0x3] = c
@@ -228,7 +228,7 @@ caml_string_set:
 	bra	caml_raise_ia_index_out_of_bounds_string ; no -> error
 	addlw	0x1		; W <- ind / 2 + 1
 	cpfsgt	POSTINC0	; size = ind / 2 + 1 ?
-	bra	caml_string_set_last_char ; yes -> goto last_char
+	bra	caml_bytes_set_last_char ; yes -> goto last_char
 	movf	[0x1], W	; no -> ok ; FSR0 += size
 	addwf	FSR0L, F
 	movf	[0x2], W
@@ -238,7 +238,7 @@ caml_string_set:
 	movwf	INDF0		; write char
 	M_CONST	0		; return ()
 	return
-caml_string_set_last_char:
+caml_bytes_set_last_char:
 	btfsc	[0x1], 0	; parity of ind ?
 	bra	caml_raise_ia_index_out_of_bounds_string ; odd -> error
 	movf	[0x1], W	; FSR0 <- @last byte (0 or 1)

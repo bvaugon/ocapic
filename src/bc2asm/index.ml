@@ -14,8 +14,9 @@ type section_name = Code | Dlpt | Dlls | Prim | Data | Symb | Crcs | Dbug
 type t = (section_name * int * int) list
 
 let parse ic =
-  let magic_str = "Caml1999X011" in
-  let magic_size = String.length magic_str in
+  let magic_str1 = "Caml1999X011" in
+  let magic_str2 = "Caml1999X023" in
+  let magic_size = String.length magic_str1 in
   let file_length = in_channel_length ic in
   let buf_magic = Bytes.create magic_size in
   let buf4 = Bytes.create 4 in
@@ -39,7 +40,8 @@ let parse ic =
   in
   seek_in ic (file_length - magic_size);
   really_input ic buf_magic 0 magic_size;
-  if Bytes.to_string buf_magic <> magic_str then failwith "invalid bytecode file (magic string does not match)";
+  if Bytes.to_string buf_magic <> magic_str1 && Bytes.to_string buf_magic <> magic_str2
+  then failwith "invalid bytecode file (magic string does not match)";
   let size = read_int (file_length - magic_size - 4) in
   let rec f ind next_offset rem =
     if ind <> -1 then

@@ -155,7 +155,11 @@ let parse_reg_bits line =
       let (bit_name, bit_addr) = parse_def line in
       check_name bit_name;
       if bit_addr > 7 then assert false;
-      if bits.(bit_addr) = None then bits.(bit_addr) <- Some bit_name;
+      begin
+        match bits.(bit_addr) with
+        | None -> bits.(bit_addr) <- Some bit_name
+        | Some _ -> ()
+      end;
       read_bits ()
   in
   (reg_names, bits, read_bits ())

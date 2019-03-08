@@ -9,6 +9,8 @@
 (*                                                                       *)
 (*************************************************************************)
 
+module Pervasives = struct
+
 (* Exceptions *)
 
 external raise : exn -> 'a = "%raise"
@@ -168,10 +170,8 @@ let string_of_int n =
 
 external int_of_string : string -> int = "caml_int_of_string"
 
-module String = struct
-  external get : string -> int -> char = "%string_safe_get"
-  external set : string -> int -> char -> unit = "%string_safe_set"
-end
+external string_get : string -> int -> char = "%string_safe_get"
+external string_set : string -> int -> char -> unit = "%string_safe_set"
 
 (* List operations -- more in module List *)
 
@@ -221,7 +221,7 @@ type out_channel = char -> unit
 let output_char oc = oc;;
 
 let output_string oc str =
-  for i = 0 to string_length str - 1 do oc str.[i] done;
+  for i = 0 to string_length str - 1 do oc (string_get str i) done;
 ;;
 
 external unsafe_string_of_bytes : bytes -> string = "%identity"
@@ -232,7 +232,7 @@ let output_bytes oc bytes =
 let output_substring oc s ofs len =
   if ofs < 0 || len < 0 || ofs > string_length s - len
   then invalid_arg "output_substring";
-  for i = ofs to ofs + len - 1 do oc s.[i] done;
+  for i = ofs to ofs + len - 1 do oc (string_get s i) done;
 ;;
 
 let output_int oc n = output_string oc (string_of_int n);;
@@ -241,7 +241,7 @@ let output oc s ofs len =
   let s = unsafe_string_of_bytes s in
   if ofs < 0 || len < 0 || ofs > string_length s - len
   then invalid_arg "output";
-  for i = ofs to ofs + len - 1 do oc s.[i] done;
+  for i = ofs to ofs + len - 1 do oc (string_get s i) done;
 ;;
 
 let output_byte oc n = oc (unsafe_char_of_int (n land 0xFF));;
@@ -327,7 +327,7 @@ let valid_float_lexem s =
   let l = string_length s in
   let rec loop i =
     if i >= l then s ^ "." else
-      match s.[i] with
+      match string_get s i with
         | '0' .. '9' | '-' | '+' | ' ' -> loop (i+1)
         | _ -> s
   in
@@ -338,14 +338,14 @@ let format_float fmt x =
   let len = string_length fmt in
   let rec read_intp i intp plus minus =
     if i = len then invalid_format ();
-    match fmt.[i] with
+    match string_get fmt i with
       | '+' ->
         read_intp (i + 1) intp true minus
       | '-' ->
         read_intp (i + 1) intp plus true
       | '.' ->
         if i + 1 = len then invalid_format () else
-          begin match fmt.[i + 1] with
+          begin match string_get fmt (i + 1) with
             | '0' .. '9' as c ->
               read_decp (i + 2) intp (int_of_char c - 48) plus minus
             | ('e' | 'E' | 'f' | 'F' | 'g' | 'G') as c ->
@@ -363,7 +363,7 @@ let format_float fmt x =
         invalid_format ()
   and read_decp i intp decp plus minus =
     if i = len then invalid_format ();
-    match fmt.[i] with
+    match string_get fmt i with
       | '+' ->
         read_decp (i + 1) intp decp true minus
       | '-' ->
@@ -418,17 +418,17 @@ let format_float fmt x =
     let dec_sz = if decp = 0 then 1 else decp + 2 in
     let str = string_create (dec_sz + 4) in
     let m = if n < 0 then 0 else if n > 9 then 9 else n in
-    str.[0] <- unsafe_char_of_int (m + 48);
-    if decp <> 0 then str.[1] <- '.';
-    str.[dec_sz] <- if maj then 'E' else 'e';
-    str.[dec_sz + 1] <- exp_sign;
-    str.[dec_sz + 2] <- unsafe_char_of_int (exp / 10 + 48);
-    str.[dec_sz + 3] <- unsafe_char_of_int (exp mod 10 + 48);
+    string_set str 0 (unsafe_char_of_int (m + 48));
+    if decp <> 0 then string_set str 1 '.';
+    string_set str dec_sz (if maj then 'E' else 'e');
+    string_set str (dec_sz + 1) exp_sign;
+    string_set str (dec_sz + 2) (unsafe_char_of_int (exp / 10 + 48));
+    string_set str (dec_sz + 3) (unsafe_char_of_int (exp mod 10 + 48));
     let dec_acc = ref ((x -. (float_of_int m)) *. 10.) in
     for i = dec_sz - decp to dec_sz - 1 do
       let n = int_of_float !dec_acc in
       let m = if n < 0 then 0 else if n > 9 then 9 else n in
-      str.[i] <- unsafe_char_of_int (m + 48);
+      string_set str i (unsafe_char_of_int (m + 48));
       dec_acc := (!dec_acc -. float_of_int m) *. 10.;
     done;
     str
@@ -437,7 +437,7 @@ let format_float fmt x =
     let intp_sz = compute_intp_sz_f adj_x 1 in
     let str = string_create (intp_sz + 1 + decp) in
     let dec = fill_intp_f adj_x str (intp_sz - 1) in
-    str.[intp_sz] <- '.';
+    string_set str intp_sz '.';
     ignore (fill_decp_f dec str (intp_sz + 1) decp);
     str
   and compute_intp_sz_f x n =
@@ -447,13 +447,13 @@ let format_float fmt x =
     let y = if i = 0 then x else fill_intp_f (x /. 10.) s (i - 1) in
     let n = int_of_float y in
     let m = if n < 0 then 0 else if n > 9 then 9 else n in
-    s.[i] <- unsafe_char_of_int (m + 48);
+    string_set s i (unsafe_char_of_int (m + 48));
     (y -. float_of_int m) *. 10.
   and fill_decp_f dec s i decp =
     if decp > 0 then
       let n = int_of_float dec in
       let m = if n < 0 then 0 else if n > 9 then 9 else n in
-      s.[i] <- unsafe_char_of_int (m + 48);
+      string_set s i (unsafe_char_of_int (m + 48));
       fill_decp_f ((dec -. float_of_int m) *. 10.) s (i + 1) (decp - 1)
   and run_g x decp maj =
     if x > 1e6 || x < ~-. 1e6 || (x > 0. && x < 1. /. 1e6) ||
@@ -467,7 +467,7 @@ let format_float fmt x =
       let len = string_length str in
       simplify str (len - 1)
   and simplify s i =
-    match s.[i] with
+    match string_get s i with
       | '.' -> string_sub s 0 i
       | '1' .. '9' -> string_sub s 0 (i + 1)
       | _ -> simplify s (i - 1)
@@ -484,7 +484,7 @@ let format_float fmt x =
       );
       res
   in
-  if len = 0 || fmt.[0] <> '%' then invalid_format ();
+  if len = 0 || string_get fmt 0 <> '%' then invalid_format ();
   read_intp 1 0 false false
 ;;
 
@@ -495,7 +495,7 @@ let float_of_string str =
   let msg = "float_of_string" in
   let rec read_intp i acc =
     if i = len then acc else
-      match str.[i] with
+      match string_get str i with
         | '0' .. '9' as c ->
           read_intp (i + 1) (10. *. acc +. float_of_int (int_of_char c - 48))
         | '.' ->
@@ -506,7 +506,7 @@ let float_of_string str =
           failwith msg
   and read_decp i acc coeff =
     if i = len then acc else
-      match str.[i] with
+      match string_get str i with
         | '0' .. '9' as c ->
           read_decp (i + 1)
             (acc +. coeff *. (float_of_int (int_of_char c - 48)))
@@ -516,19 +516,19 @@ let float_of_string str =
         | _ -> failwith msg
   and read_expp i acc =
     if i = len then failwith msg;
-    match str.[i] with
+    match string_get str i with
       | '0' .. '9' as c ->
         read_expp_rest (i + 1) acc (int_of_char c - 48) true
       | '+' ->
         if i + 1 = len then failwith msg;
-        begin match str.[i + 1] with
+        begin match string_get str (i + 1) with
           | '0' .. '9' as c ->
             read_expp_rest (i + 2) acc (int_of_char c - 48) true
           | _ -> failwith msg
         end
       | '-' ->
         if i + 1 = len then failwith msg;
-        begin match str.[i + 1] with
+        begin match string_get str (i + 1) with
           | '0' .. '9' as c ->
             read_expp_rest (i + 2) acc (int_of_char c - 48) false
           | _ -> failwith msg
@@ -538,24 +538,24 @@ let float_of_string str =
     if i = len then
       if es then acc *. (pow 10. exp) else acc *. (pow 10. (-exp))
     else
-      match str.[i] with
+      match string_get str i with
         | '0' .. '9' as c ->
           read_expp_rest (i + 1) acc (10 * exp + int_of_char c - 48) es
         | _ -> failwith msg
   in
   if len = 0 then failwith msg;
-  match str.[0] with
+  match string_get str 0 with
     | '0' .. '9' as c -> read_intp 1 (float_of_int (int_of_char c - 48))
     | '+' ->
       if len = 1 then failwith msg;
-      begin match str.[1] with
+      begin match string_get str 1 with
         | '0' .. 'c' as c -> read_intp 2 (float_of_int (int_of_char c - 48))
         | '.' -> read_decp 2 0. 0.1
         | _ -> failwith msg
       end
     | '-' ->
       if len = 1 then failwith msg;
-      begin match str.[1] with
+      begin match string_get str 1 with
         | '0' .. 'c' as c ->
           ~-. (read_intp 2 (float_of_int (int_of_char c - 48)))
         | '.' ->
@@ -566,3 +566,42 @@ let float_of_string str =
     | '.' -> read_decp 1 0. 0.1
     | _ -> failwith msg
 ;;
+
+end
+
+include Pervasives
+
+module ArrayLabels        = Stdlib__arrayLabels
+module Array              = Stdlib__array
+module Char               = Stdlib__char
+module List               = Stdlib__list
+module BytesLabels        = Stdlib__bytesLabels
+module Bytes              = Stdlib__bytes
+module Sys                = Stdlib__sys
+module Map                = Stdlib__map
+module Eeprom             = Stdlib__eeprom
+module Gc                 = Stdlib__gc
+module Genlex             = Stdlib__genlex
+module String             = Stdlib__string
+module Int32              = Stdlib__int32
+module Int64              = Stdlib__int64
+module Random             = Stdlib__random
+module Hashtbl            = Stdlib__hashtbl
+module Lazy               = Stdlib__lazy
+module ListLabels         = Stdlib__listLabels
+module MoreLabels         = Stdlib__moreLabels
+module Nap                = Stdlib__nap
+module Nativeint          = Stdlib__nativeint
+module Obj                = Stdlib__obj
+module Oo                 = Stdlib__oo
+module Queue              = Stdlib__queue
+module Serial             = Stdlib__serial
+module Set                = Stdlib__set
+module Sort               = Stdlib__sort
+module Stack              = Stdlib__stack
+module StdLabels          = Stdlib__stdLabels
+module Stream             = Stdlib__stream
+module StringLabels       = Stdlib__stringLabels
+module Uchar              = Stdlib__uchar
+module Buffer             = Stdlib__buffer
+module Printf             = Stdlib__printf

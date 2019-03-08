@@ -153,6 +153,9 @@ try
   output_char oc '\n';
   Configs.print_configs oc;
   output_char oc '\n';
+  Printf.fprintf oc "        errorlevel -302\n";
+  Printf.fprintf oc "        errorlevel -1301\n";
+  output_char oc '\n';
   begin match !gc_algo with
     | Constants.Stop_and_copy ->
       Printf.fprintf oc "CAML_STOP_AND_COPY_GC\n"

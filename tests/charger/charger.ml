@@ -48,7 +48,7 @@ write_reg T0CON 0b10000111;;
 
 let analog_read n =
   write_reg ADCON0 (0b00000011 lor (n lsl 2));
-  while test_bit GO do () done;
+  while test_bit GO_NOT_DONE do () done;
   (read_reg ADRESH lsl 8) lor read_reg ADRES
 ;;
 
@@ -176,11 +176,11 @@ print_charge ();; (* 0.0Ah *)
 
 let reset_timer0 () =
   write_reg TMR0H 0;
-  write_reg TMR0L 0;
+  write_reg TMR0 0;
 ;;
 
 let test_timer0 () =
-  ignore (read_reg TMR0L);
+  ignore (read_reg TMR0);
   read_reg TMR0H < 122    (* 122 = 8000000 / 2^16 *)
 ;;
 

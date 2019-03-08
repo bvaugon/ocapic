@@ -55,7 +55,7 @@ let read_temp () =
   write_reg ADCON2 0b10111110;
   write_reg ADCON1 0b00111101;
   write_reg ADCON0 0b00000111;
-  while test_bit GO do () done;
+  while test_bit GO_NOT_DONE do () done;
   (read_reg ADRESH lsl 8) lor read_reg ADRES
 
 let print_temp temp =

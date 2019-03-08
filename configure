@@ -72,10 +72,10 @@ check_command "cc"
 
 ###
 
-OCAML="$(wich ocaml.opt 2> /dev/null || which ocaml)"
+OCAML="$(which ocaml.opt 2> /dev/null || which ocaml)"
 OCAMLOPT="$(which ocamlopt.opt 2> /dev/null || which ocamlopt)"
 OCAMLC="$(which ocamlc.opt 2> /dev/null || which ocamlc)"
-OCAMLDOC="$(wich ocamldoc.opt 2> /dev/null || which ocamldoc)"
+OCAMLDOC="$(which ocamldoc.opt 2> /dev/null || which ocamldoc)"
 CAMLP4="$(which camlp4)"
 OCAMLBUILD="$(which ocamlbuild)"
 CAMLLIB="$(ocamlc -where)"

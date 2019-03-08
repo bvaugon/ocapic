@@ -75,16 +75,16 @@ let my_handler =
     Sys.sleep 100;
 ;;
 
-set_bit INT0E;;
-set_bit GIE;;
-set_interruption INT0F (Interruption_handle my_handler);;
+set_bit INT0IE;;
+set_bit GIE_GIEH;;
+set_interruption INT0IF (Interruption_handle my_handler);;
 
 while true do
   for i = 0 to max_int do
-    clear_bit GIE;
+    clear_bit GIE_GIEH;
     moveto 1 0;
     Printf.fprintf output "Loop %d" i;
-    set_bit GIE;
+    set_bit GIE_GIEH;
     Sys.sleep 100;
   done
 done
