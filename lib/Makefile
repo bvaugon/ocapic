@@ -51,7 +51,7 @@ SPIC_MANS := $(foreach base, $(SPIC_BASES), \
 
 STD_CMIS := $(STD_BASES:=.cmi)
 STD_CMOS := $(STD_BASES:=.cmo)
-STD_MANS := $(foreach base, $(STD_BASES), $(call capitalize, $(base:stdlib__%=%)).3o)
+STD_MANS := $(foreach base, $(STD_BASES), $(call capitalize, $(call rmprefix,stdlib__,$(base))).3o)
 
 ALL_MANS := $(SPIC_MANS) $(STD_MANS) Stdlib.3o
 
