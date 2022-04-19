@@ -54,7 +54,7 @@ SAVED_PWD=$(pwd)
 
 ###
 
-CC=$(which gcc 2> /dev/null || which cc)
+CC=gcc
 BINDIR=/usr/local/bin
 LIBDIR=/usr/local/lib/ocapic
 MANDIR=/usr/local/man
@@ -112,8 +112,8 @@ OCAMLCLEAN_LOCAL_VERSION=$(
     echo ocamlclean/ocamlclean-*.tar.bz2 | \
         sed 'sX.*ocamlclean/ocamlclean-\(.*\)\.tar\.bz2$X\1X'
 )
-INSTALLED_OCAMLCLEAN="$(which ocamlclean 2> /dev/null)"
-if [ $? -eq 0 ]; then
+INSTALLED_OCAMLCLEAN="$CAMLLIB/../../bin/ocamlclean"
+if [ -e "$INSTALLED_OCAMLCLEAN" ]; then
     INSTALLED_OCAMLCLEAN_VERSION=$("$INSTALLED_OCAMLCLEAN" -version)
     if [ $INSTALLED_OCAMLCLEAN_VERSION '<' $OCAMLCLEAN_LOCAL_VERSION ]; then
         echo -n "Warning: an old OCamlClean version is already installed: "
