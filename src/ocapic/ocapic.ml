@@ -21,7 +21,6 @@ let pp_commands = ref [];;
 let where () = Printf.printf "%s\n%!" Config.libdir; exit 0;;
 let ocaml () = Printf.printf "%s\n%!" Config.ocaml; exit 0;;
 let ocamlc () = Printf.printf "%s\n%!" Config.ocamlc; exit 0;;
-let camlp4 () = Printf.printf "%s\n%!" Config.camlp4; exit 0;;
 
 let spec =
   Arg.align [
@@ -37,8 +36,6 @@ let spec =
      " Print location of OCaml toplevel and exit");
     ("-ocamlc", Arg.Unit ocamlc,
      " Print location of OCaml bytecode compiler and exit");
-    ("-camlp4", Arg.Unit camlp4,
-     " Print location of OCaml preprocessor and exit");
     ("-version", Arg.Unit (fun () -> print_endline Config.version ; exit 0),
      " Print version and exit");
     ("-verbose", Arg.Set verbose,
@@ -54,7 +51,7 @@ Usages:\n\
 \  %s [ <pic> ] [ OCAMLC_OPTS ] [ OPTIONS ] -c <src.mli> ...\n\
 \  %s <pic> [ OCAMLC_OPTS ] [ BC2ASM_OPTS ] [ OPTIONS ] <src.ml> ...\n\
 \  %s <pic> [ OCAMLC_OPTS ] [ BC2ASM_OPTS ] [ OPTIONS ] <obj.cmo> ...\n\
-\  %s ( -where | -ocaml | -ocamlc | -camlp4 )\n\
+\  %s ( -where | -ocaml | -ocamlc )\n\
 \n\
 Options:" me me me me me
 ;;
@@ -70,7 +67,6 @@ if Array.length Sys.argv = 2 then
     | "-where" -> where ();
     | "-ocaml" -> ocaml ();
     | "-ocamlc" -> ocamlc ();
-    | "-camlp4" -> camlp4 ();
     | _ -> ();
 ;;
 

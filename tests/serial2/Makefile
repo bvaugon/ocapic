@@ -11,7 +11,7 @@
 
 include ../../etc/TestsMakefile.conf
 
-OCAMLFLAGS = -w Ae -warn-error A -safe-string -strict-formats -strict-sequence
+OCAMLFLAGS = -w @a-4-70 -warn-error A -safe-string -strict-formats -strict-sequence
 EXTRALIB = $(shell $(OCAPIC) -where)/extra
 OCAMLC = $(shell $(OCAPIC) -ocamlc)
 OCAML = $(shell $(OCAPIC) -ocaml)

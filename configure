@@ -30,13 +30,6 @@ function usage () {
  -pics <regexp>  Choose PIC to be managed by OCaPIC"
 }
 
-function check_command () {
-    which "$1" > /dev/null
-    if [ $? -ne 0 ]; then
-        error "Error: \"$1\" not installed"
-    fi
-}
-
 function check_absolute_path () {
     case "$1" in
         /*);;
@@ -50,35 +43,12 @@ function remove_trailing_slash () {
 
 ###
 
-check_command "ocaml"
-check_command "ocamlc"
-check_command "ocamlopt"
-check_command "ocamlbuild"
-check_command "ocamldep"
-check_command "ocamldoc"
-check_command "camlp4"
-check_command "mkdir"
-check_command "rmdir"
-check_command "chmod"
-check_command "grep"
-check_command "echo"
-check_command "cat"
-check_command "sed"
-check_command "cp"
-check_command "rm"
-check_command "ar"
-check_command "cp"
-check_command "cc"
-
-###
-
-OCAML="$(which ocaml.opt 2> /dev/null || which ocaml)"
-OCAMLOPT="$(which ocamlopt.opt 2> /dev/null || which ocamlopt)"
-OCAMLC="$(which ocamlc.opt 2> /dev/null || which ocamlc)"
-OCAMLDOC="$(which ocamldoc.opt 2> /dev/null || which ocamldoc)"
-CAMLP4="$(which camlp4)"
-OCAMLBUILD="$(which ocamlbuild)"
 CAMLLIB="$(ocamlc -where)"
+OCAML="$CAMLLIB/../../bin/ocaml"
+OCAMLOPT="$CAMLLIB/../../bin/ocamlopt"
+OCAMLC="$CAMLLIB/../../bin/ocamlc"
+OCAMLDOC="$CAMLLIB/../../bin/ocamldoc"
+OCAMLBUILD="$CAMLLIB/../../bin/ocamlbuild"
 VERSION="$(cat VERSION)"
 SAVED_PWD=$(pwd)
 
@@ -197,11 +167,11 @@ LIBDIR = $LIBDIR
 MAN1DIR = $MANDIR/man1
 MAN3DIR = $MANDIR/man3
 CC = $CC
-OCAMLC = $OCAMLC -w Ae -warn-error A -safe-string -strict-formats -strict-sequence
-OCAMLOPT = $OCAMLOPT -w Ae -warn-error A -safe-string -strict-formats -strict-sequence
+OCAMLC = $OCAMLC -w @a-4-70 -warn-error A -safe-string -strict-formats -strict-sequence -ccopt -fPIE
+OCAMLOPT = $OCAMLOPT -w @a-4-70 -warn-error A -safe-string -strict-formats -strict-sequence
 OCAMLDOC = $OCAMLDOC
 OCAMLC_UNSAFE = $OCAMLC
-OCAMLBUILD = $OCAMLBUILD -cflags -w,Ae,-warn-error,A,-safe-string,-strict-formats,-strict-sequence -lflags -w,Ae,-warn-error,A,-safe-string,-strict-formats,-strict-sequence -no-links -classic-display
+OCAMLBUILD = $OCAMLBUILD -cflags -w,@a-4-70,-warn-error,A,-safe-string,-strict-formats,-strict-sequence -lflags -w,@a-4-70,-warn-error,A,-safe-string,-strict-formats,-strict-sequence -no-links -classic-display
 OCAMLSTDLIB = $OCAMLSTDLIB
 SRC = $SAVED_PWD/src
 BIN = $SAVED_PWD/bin
@@ -238,7 +208,6 @@ endef
 let libdir = \"$LIBDIR\"
 let ocaml = \"$OCAML\"
 let ocamlc = \"$OCAMLC\"
-let camlp4 = \"$CAMLP4\"
 let camllib = \"$CAMLLIB\"
 let bc2asm = \"$BINDIR/bc2asm\"
 let ocamlclean = \"$OCAMLCLEAN\"

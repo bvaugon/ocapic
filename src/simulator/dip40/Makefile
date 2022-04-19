@@ -16,7 +16,7 @@ TARG = $(BIN)/ocapic_dip40_simulator
 all: $(TARG)
 
 $(TARG): main.ml
-	$(OCAMLOPT) -thread unix.cmxa threads.cmxa graphics.cmxa -I $(LIB)/extra simul.cmx $< -o $@
+	$(OCAMLOPT) -thread -I $(LIB)/extra -I +../graphics unix.cmxa threads.cmxa graphics.cmxa simul.cmx $< -o $@
 
 clean:
 	@rm -f *~ *.o *.cmi *.cmx $(TARG)

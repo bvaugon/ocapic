@@ -16,7 +16,7 @@ TARG = $(BIN)/ocapic_goblet_simulator
 all: $(TARG)
 
 $(TARG): main.ml
-	$(OCAMLOPT) -thread unix.cmxa threads.cmxa graphics.cmxa $< -o $@
+	$(OCAMLOPT) -thread -I +../graphics unix.cmxa threads.cmxa graphics.cmxa $< -o $@
 
 clean:
 	@rm -f *~ *.o *.cmi *.cmx $(TARG)

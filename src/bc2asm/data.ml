@@ -116,42 +116,22 @@ let factor data =
   Array.map f data
 ;;
 
-let parse ic index =
-  let (offset, _) =
-    try
-      Index.find_section index Index.Data
-    with Not_found ->
-      failwith "code section not found"
-  in
-  seek_in ic offset;
-  let (tbl : Obj.t array) = input_value ic in
-  let rec elem_of_obj obj =
-    let tag = Obj.tag obj in
-    if tag = Obj.string_tag then String (Obj.obj obj)
-    else if tag = Obj.double_tag then Float (Obj.obj obj)
-    else if tag = Obj.double_array_tag then Floats (Obj.obj obj)
-    else if tag = Obj.int_tag then Int (Obj.obj obj)
-    else if tag = Obj.out_of_heap_tag then Out_of_heap (Obj.obj obj)
-    else if tag = Obj.custom_tag then
-      let key = Obj.field obj 0 in
-      if key == Obj.field (Obj.repr 0l) 0 then
-        Int_32 (Obj.obj obj)
-      else if key == Obj.field (Obj.repr 0L) 0 then
-        Int_64 (Obj.obj obj)
-      else
-        failwith "unknown custom block"
-      else
-        let size = Obj.size obj in
-        let tab =
-          Array.init size (fun i -> elem_of_obj (Obj.field obj i))
-        in
-        if tag = Obj.closure_tag then Closure tab
-        else Block (tab, tag)
-  in
-  let data0 = Array.map elem_of_obj tbl in
-  let data1 = Array.sub data0 exn_number (Array.length data0 - exn_number) in
-  let data2 = factor data1 in
-  data2
+let parse data =
+  let rec elem_of_value value =
+    match value with
+    | OByteLib.Value.Int n               -> Int n
+    | OByteLib.Value.Int32 n             -> Int_32 n
+    | OByteLib.Value.Int64 n             -> Int_64 n
+    | OByteLib.Value.Nativeint _         -> assert false
+    | OByteLib.Value.Float x             -> Float x
+    | OByteLib.Value.Float_array tbl     -> Floats tbl
+    | OByteLib.Value.String s            -> String s
+    | OByteLib.Value.Object fields       -> Block (Array.map elem_of_value fields, Obj.object_tag)
+    | OByteLib.Value.Block (tag, fields) ->
+      if tag = Obj.closure_tag
+      then Closure (Array.map elem_of_value fields)
+      else Block (Array.map elem_of_value fields, tag) in
+  Array.map elem_of_value data
 ;;
 
 module SSet = Set.Make (String)

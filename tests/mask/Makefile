@@ -11,7 +11,7 @@
 
 include ../../etc/TestsMakefile.conf
 
-OCAMLFLAGS = -w Ae -warn-error A -safe-string -strict-formats -strict-sequence
+OCAMLFLAGS = -w @a-4-70 -warn-error A -safe-string -strict-formats -strict-sequence
 OCAMLC = $(shell $(OCAPIC) -ocamlc)
 BASE = mask
 PIC = 18f4620

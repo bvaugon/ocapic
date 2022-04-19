@@ -350,7 +350,7 @@ static value caml_serial_receive_data_loop(int size){
         int str_sz = 2*block_sz - 1 - buffer[i - 1 + 2*block_sz];
         str = caml_alloc_string(str_sz);
         for(j = 0 ; j < str_sz ; j ++){
-          String_val(str)[j] = buffer[i + j];
+          Bytes_val(str)[j] = buffer[i + j];
         }
         blocks[i] = str;
         break;
@@ -616,7 +616,7 @@ static value caml_serial_send_block_data_loop(value v, int adr, tag_t tag,
     break;
   }
   case Custom_tag: {
-    char *id = Custom_ops_val(curv)->identifier;
+    const char *id = Custom_ops_val(curv)->identifier;
     if(!strcmp(id, "_i")){
       int i;
       int32_t n = Int32_val(curv);

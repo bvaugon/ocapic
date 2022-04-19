@@ -135,11 +135,10 @@ if stack_size + total_heap_size > pic_segment_nb then
 
 let print_include oc = Printf.fprintf oc "        include \"%s\"\n" in
 try
-  let ic = open_in_bin bytecode in
-  let index = Index.parse ic in
-  let prims = Prim.parse ic index in
-  let code = Code.parse ic index in
-  let data = Data.parse ic index in
+  let bytefile = OByteLib.Bytefile.read bytecode in
+  let prims = Prim.parse bytefile.OByteLib.Bytefile.prim in
+  let code = Code.parse bytefile.OByteLib.Bytefile.code in
+  let data = Data.parse bytefile.OByteLib.Bytefile.data in
   let code = Data.remap_code code in
   let premap = Prim.remap prims code in
   Code.resolve_addr (Prim.length premap) code !gc_algo;
@@ -177,7 +176,6 @@ try
   List.iter (print_include oc) !externs;
   print_include oc !stdlib;
   Printf.fprintf oc "\n        end\n";
-  close_in ic;
   close_out oc;
 with Failure msg ->
   Printf.eprintf "Error: %s\n%!" msg;

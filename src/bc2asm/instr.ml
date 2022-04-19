@@ -113,191 +113,161 @@ and bc =
   | Break
 ;;
 
-let parse read =
-  let read_ptr () = {
-    old_ofs = read ();
-    pointed = { old_addr = -1 ; new_addr = -1 ; bc = Break };
-  } in
-  let read_prim () = {
-    old_ind = read ();
-    new_ind = -1;
-  } in
-  try
-    let opcode = read () in
-    let instrs =
-      try
-        match opcode with
-          | 0 ->   Acc 0
-          | 1 ->   Acc 1
-          | 2 ->   Acc 2
-          | 3 ->   Acc 3
-          | 4 ->   Acc 4
-          | 5 ->   Acc 5
-          | 6 ->   Acc 6
-          | 7 ->   Acc 7
-          | 8 ->   Acc (read ())
-          | 9 ->   Push
-          | 10 ->  Pushacc 0
-          | 11 ->  Pushacc 1
-          | 12 ->  Pushacc 2
-          | 13 ->  Pushacc 3
-          | 14 ->  Pushacc 4
-          | 15 ->  Pushacc 5
-          | 16 ->  Pushacc 6
-          | 17 ->  Pushacc 7
-          | 18 ->  Pushacc (read ())
-          | 19 ->  Pop (read ())
-          | 20 ->  Assign (read ())
-          | 21 ->  Envacc 1
-          | 22 ->  Envacc 2
-          | 23 ->  Envacc 3
-          | 24 ->  Envacc 4
-          | 25 ->  Envacc (read ())
-          | 26 ->  Pushenvacc 1
-          | 27 ->  Pushenvacc 2
-          | 28 ->  Pushenvacc 3
-          | 29 ->  Pushenvacc 4
-          | 30 ->  Pushenvacc (read ())
-          | 31 ->  Pushretaddr (read_ptr ())
-          | 32 ->  Apply (read ())
-          | 33 ->  Apply 1
-          | 34 ->  Apply 2
-          | 35 ->  Apply 3
-          | 36 ->  let n = read () in let s = read () in Appterm (n, s)
-          | 37 ->  Appterm ((read ()), 1)
-          | 38 ->  Appterm ((read ()), 2)
-          | 39 ->  Appterm ((read ()), 3)
-          | 40 ->  Return (read ())
-          | 41 ->  Restart
-          | 42 ->  Grab (read ())
-          | 43 ->  let n = read () in let ptr = read_ptr () in Closure (n, ptr)
-          | 44 ->
-            let f = read () in
-            let v = read () in
-            let o = read_ptr () in
-            let t = if f = 1 then [||] else
-                let t = Array.make (f - 1) (read_ptr ()) in
-                for i = 1 to f - 2 do t.(i) <- read_ptr () done ; t
-            in
-            Closurerec (f, v, o, t)
-          | 45 ->  Offsetclosurem2
-          | 46 ->  Offsetclosure 0
-          | 47 ->  Offsetclosure 2
-          | 48 ->  Offsetclosure (read ())
-          | 49 ->  Pushoffsetclosurem2
-          | 50 ->  Pushoffsetclosure 0
-          | 51 ->  Pushoffsetclosure 2
-          | 52 ->  Pushoffsetclosure (read ())
-          | 53 ->  Getglobal (read ())
-          | 54 ->  Pushgetglobal (read ())
-          | 55 ->  let n = read () in let p = read () in Getglobalfield (n, p)
-          | 56 ->  let n = read () in let p = read () in
-                                      Pushgetglobalfield (n, p)
-          | 57 ->  Setglobal (read ())
-          | 58 ->  Atom 0
-          | 59 ->  Atom (read ())
-          | 60 ->  Pushatom 0
-          | 61 ->  Pushatom (read ())
-          | 62 ->
-            let n = read () in let t = read () in
-                               if n <> 0 then Makeblock (n, t) else Atom t
-          | 63 ->  Makeblock (1, read ())
-          | 64 ->  Makeblock (2, read ())
-          | 65 ->  Makeblock (3, read ())
-          | 66 ->  Makefloatblock (read ())
-          | 67 ->  Getfield 0
-          | 68 ->  Getfield 1
-          | 69 ->  Getfield 2
-          | 70 ->  Getfield 3
-          | 71 ->  Getfield (read ())
-          | 72 ->  Getfloatfield (read ())
-          | 73 ->  Setfield 0
-          | 74 ->  Setfield 1
-          | 75 ->  Setfield 2
-          | 76 ->  Setfield 3
-          | 77 ->  Setfield (read ())
-          | 78 ->  Setfloatfield (read ())
-          | 79 ->  Vectlength
-          | 80 ->  Getvectitem
-          | 81 ->  Setvectitem
-          | 82 ->  Getbyteschar
-          | 83 ->  Setbyteschar
-          | 84 ->  Branch (read_ptr ())
-          | 85 ->  Branchif (read_ptr ())
-          | 86 ->  Branchifnot (read_ptr ())
-          | 87 ->
-            let n = read () in
-            let size_tag = n lsr 16 in
-            let size_long = n land (1 lsl 16 - 1) in
-            let size = size_tag + size_long in
-            let tab = Array.init size (fun _ -> read_ptr ()) in
-            Switch (n, tab)
-          | 88 ->  Boolnot
-          | 89 ->  Pushtrap (read_ptr ())
-          | 90 ->  Poptrap
-          | 91 ->  Raise
-          | 92 ->  Checksignals
-          | 93 ->  Ccall (1, read_prim ())
-          | 94 ->  Ccall (2, read_prim ())
-          | 95 ->  Ccall (3, read_prim ())
-          | 96 ->  Ccall (4, read_prim ())
-          | 97 ->  Ccall (5, read_prim ())
-          | 98 ->  let n = read () in let p = read_prim () in Ccall (n, p)
-          | 99 ->  Const 0
-          | 100 -> Const 1
-          | 101 -> Const 2
-          | 102 -> Const 3
-          | 103 -> Const (read ())
-          | 104 -> Pushconst 0
-          | 105 -> Pushconst 1
-          | 106 -> Pushconst 2
-          | 107 -> Pushconst 3
-          | 108 -> Pushconst (read ())
-          | 109 -> Negint
-          | 110 -> Addint
-          | 111 -> Subint
-          | 112 -> Mulint
-          | 113 -> Divint
-          | 114 -> Modint
-          | 115 -> Andint
-          | 116 -> Orint
-          | 117 -> Xorint
-          | 118 -> Lslint
-          | 119 -> Lsrint
-          | 120 -> Asrint
-          | 121 -> Eq
-          | 122 -> Neq
-          | 123 -> Ltint
-          | 124 -> Leint
-          | 125 -> Gtint
-          | 126 -> Geint
-          | 127 -> Offsetint (read ())
-          | 128 -> Offsetref (read ())
-          | 129 -> Isint
-          | 130 -> Getmethod
-          | 131 -> let v = read () in let ptr = read_ptr () in Beq (v, ptr)
-          | 132 -> let v = read () in let ptr = read_ptr () in Bneq (v, ptr)
-          | 133 -> let v = read () in let ptr = read_ptr () in Blint (v, ptr)
-          | 134 -> let v = read () in let ptr = read_ptr () in Bleint (v, ptr)
-          | 135 -> let v = read () in let ptr = read_ptr () in Bgtint (v, ptr)
-          | 136 -> let v = read () in let ptr = read_ptr () in Bgeint (v, ptr)
-          | 137 -> Ultint
-          | 138 -> Ugeint
-          | 139 -> let v = read () in let ptr = read_ptr () in Bultint (v, ptr)
-          | 140 -> let v = read () in let ptr = read_ptr () in Bugeint (v, ptr)
-          | 141 -> let v = read () in let cch = read () in Getpubmet (v, cch)
-          | 142 -> Getdynmet
-          | 143 -> Stop
-          | 144 -> Event
-          | 145 -> Break
-          | 146 -> Reraise
-          | 147 -> Raisenotrace
-          | 148 -> Getbyteschar
-          | _ -> failwith (Printf.sprintf "invalid opcode: %d" opcode)
-      with End_of_file -> failwith "unexpected end of code section"
-    in
-    Some instrs
-  with End_of_file -> None
+let parse instr_ind instr =
+  let make_ptr ptr = { old_ofs = ptr; pointed = { old_addr = -1; new_addr = -1; bc = Break } } in
+  let make_prim prim = { old_ind = prim; new_ind = -1 } in
+  let bc =
+    match instr with
+    | OByteLib.Instr.ACC0                      -> Acc 0
+    | OByteLib.Instr.ACC1                      -> Acc 1
+    | OByteLib.Instr.ACC2                      -> Acc 2 
+    | OByteLib.Instr.ACC3                      -> Acc 3
+    | OByteLib.Instr.ACC4                      -> Acc 4
+    | OByteLib.Instr.ACC5                      -> Acc 5
+    | OByteLib.Instr.ACC6                      -> Acc 6
+    | OByteLib.Instr.ACC7                      -> Acc 7
+    | OByteLib.Instr.ACC n                     -> Acc n
+    | OByteLib.Instr.PUSH                      -> Push
+    | OByteLib.Instr.PUSHACC0                  -> Pushacc 0
+    | OByteLib.Instr.PUSHACC1                  -> Pushacc 1
+    | OByteLib.Instr.PUSHACC2                  -> Pushacc 2
+    | OByteLib.Instr.PUSHACC3                  -> Pushacc 3
+    | OByteLib.Instr.PUSHACC4                  -> Pushacc 4
+    | OByteLib.Instr.PUSHACC5                  -> Pushacc 5
+    | OByteLib.Instr.PUSHACC6                  -> Pushacc 6
+    | OByteLib.Instr.PUSHACC7                  -> Pushacc 7
+    | OByteLib.Instr.PUSHACC n                 -> Pushacc n
+    | OByteLib.Instr.POP n                     -> Pop n
+    | OByteLib.Instr.ASSIGN n                  -> Assign n
+    | OByteLib.Instr.ENVACC1                   -> Envacc 1
+    | OByteLib.Instr.ENVACC2                   -> Envacc 2
+    | OByteLib.Instr.ENVACC3                   -> Envacc 3
+    | OByteLib.Instr.ENVACC4                   -> Envacc 4
+    | OByteLib.Instr.ENVACC n                  -> Envacc n
+    | OByteLib.Instr.PUSHENVACC1               -> Pushenvacc 1
+    | OByteLib.Instr.PUSHENVACC2               -> Pushenvacc 2
+    | OByteLib.Instr.PUSHENVACC3               -> Pushenvacc 3
+    | OByteLib.Instr.PUSHENVACC4               -> Pushenvacc 4
+    | OByteLib.Instr.PUSHENVACC n              -> Pushenvacc n
+    | OByteLib.Instr.PUSH_RETADDR ptr          -> Pushretaddr (make_ptr ptr)
+    | OByteLib.Instr.APPLY n                   -> Apply n
+    | OByteLib.Instr.APPLY1                    -> Apply 1
+    | OByteLib.Instr.APPLY2                    -> Apply 2
+    | OByteLib.Instr.APPLY3                    -> Apply 3
+    | OByteLib.Instr.APPTERM (n, p)            -> Appterm (n, p)
+    | OByteLib.Instr.APPTERM1 p                -> Appterm (1, p)
+    | OByteLib.Instr.APPTERM2 p                -> Appterm (2, p)
+    | OByteLib.Instr.APPTERM3 p                -> Appterm (3, p)
+    | OByteLib.Instr.RETURN n                  -> Return n
+    | OByteLib.Instr.RESTART                   -> Restart
+    | OByteLib.Instr.GRAB n                    -> Grab n
+    | OByteLib.Instr.CLOSURE (n, ptr)          -> Closure (n, make_ptr ptr)
+    | OByteLib.Instr.CLOSUREREC (f, v, o, t)   -> Closurerec (f, v, make_ptr o, Array.map make_ptr t)
+    | OByteLib.Instr.OFFSETCLOSUREM2           -> Offsetclosurem2
+    | OByteLib.Instr.OFFSETCLOSURE0            -> Offsetclosure 0
+    | OByteLib.Instr.OFFSETCLOSURE2            -> Offsetclosure 2
+    | OByteLib.Instr.OFFSETCLOSURE n           -> Offsetclosure n
+    | OByteLib.Instr.PUSHOFFSETCLOSUREM2       -> Pushoffsetclosurem2
+    | OByteLib.Instr.PUSHOFFSETCLOSURE0        -> Pushoffsetclosure 0
+    | OByteLib.Instr.PUSHOFFSETCLOSURE2        -> Pushoffsetclosure 2
+    | OByteLib.Instr.PUSHOFFSETCLOSURE n       -> Pushoffsetclosure n
+    | OByteLib.Instr.GETGLOBAL n               -> Getglobal n
+    | OByteLib.Instr.PUSHGETGLOBAL n           -> Pushgetglobal n
+    | OByteLib.Instr.GETGLOBALFIELD (n, p)     -> Getglobalfield (n, p)
+    | OByteLib.Instr.PUSHGETGLOBALFIELD (n, p) -> Pushgetglobalfield (n, p)
+    | OByteLib.Instr.SETGLOBAL n               -> Setglobal n
+    | OByteLib.Instr.ATOM0                     -> Atom 0
+    | OByteLib.Instr.ATOM n                    -> Atom n
+    | OByteLib.Instr.PUSHATOM0                 -> Pushatom 0
+    | OByteLib.Instr.PUSHATOM n                -> Pushatom n
+    | OByteLib.Instr.MAKEBLOCK (tag, size)     -> Makeblock (size, tag)
+    | OByteLib.Instr.MAKEBLOCK1 tag            -> Makeblock (1, tag)
+    | OByteLib.Instr.MAKEBLOCK2 tag            -> Makeblock (2, tag)
+    | OByteLib.Instr.MAKEBLOCK3 tag            -> Makeblock (3, tag)
+    | OByteLib.Instr.MAKEFLOATBLOCK size       -> Makefloatblock size
+    | OByteLib.Instr.GETFIELD0                 -> Getfield 0
+    | OByteLib.Instr.GETFIELD1                 -> Getfield 1
+    | OByteLib.Instr.GETFIELD2                 -> Getfield 2
+    | OByteLib.Instr.GETFIELD3                 -> Getfield 3
+    | OByteLib.Instr.GETFIELD n                -> Getfield n
+    | OByteLib.Instr.GETFLOATFIELD n           -> Getfloatfield n
+    | OByteLib.Instr.SETFIELD0                 -> Setfield 0
+    | OByteLib.Instr.SETFIELD1                 -> Setfield 1
+    | OByteLib.Instr.SETFIELD2                 -> Setfield 2
+    | OByteLib.Instr.SETFIELD3                 -> Setfield 3
+    | OByteLib.Instr.SETFIELD n                -> Setfield n
+    | OByteLib.Instr.SETFLOATFIELD n           -> Setfloatfield n
+    | OByteLib.Instr.VECTLENGTH                -> Vectlength
+    | OByteLib.Instr.GETVECTITEM               -> Getvectitem
+    | OByteLib.Instr.SETVECTITEM               -> Setvectitem
+    | OByteLib.Instr.GETBYTESCHAR              -> Getbyteschar
+    | OByteLib.Instr.SETBYTESCHAR              -> Setbyteschar
+    | OByteLib.Instr.GETSTRINGCHAR             -> Getbyteschar
+    | OByteLib.Instr.BRANCH ptr                -> Branch (make_ptr ptr)
+    | OByteLib.Instr.BRANCHIF ptr              -> Branchif (make_ptr ptr)
+    | OByteLib.Instr.BRANCHIFNOT ptr           -> Branchifnot (make_ptr ptr)
+    | OByteLib.Instr.SWITCH (n, ptrs)          -> Switch (n, Array.map make_ptr ptrs)
+    | OByteLib.Instr.BOOLNOT                   -> Boolnot
+    | OByteLib.Instr.PUSHTRAP ptr              -> Pushtrap (make_ptr ptr)
+    | OByteLib.Instr.POPTRAP                   -> Poptrap
+    | OByteLib.Instr.RAISE                     -> Raise
+    | OByteLib.Instr.CHECK_SIGNALS             -> Checksignals
+    | OByteLib.Instr.C_CALL1 prim              -> Ccall (1, make_prim prim)
+    | OByteLib.Instr.C_CALL2 prim              -> Ccall (2, make_prim prim)
+    | OByteLib.Instr.C_CALL3 prim              -> Ccall (3, make_prim prim)
+    | OByteLib.Instr.C_CALL4 prim              -> Ccall (4, make_prim prim)
+    | OByteLib.Instr.C_CALL5 prim              -> Ccall (5, make_prim prim)
+    | OByteLib.Instr.C_CALLN (narg, prim)      -> Ccall (narg, make_prim prim)
+    | OByteLib.Instr.CONST0                    -> Const 0
+    | OByteLib.Instr.CONST1                    -> Const 1
+    | OByteLib.Instr.CONST2                    -> Const 2
+    | OByteLib.Instr.CONST3                    -> Const 3
+    | OByteLib.Instr.CONSTINT n                -> Const n
+    | OByteLib.Instr.PUSHCONST0                -> Pushconst 0
+    | OByteLib.Instr.PUSHCONST1                -> Pushconst 1
+    | OByteLib.Instr.PUSHCONST2                -> Pushconst 2
+    | OByteLib.Instr.PUSHCONST3                -> Pushconst 3
+    | OByteLib.Instr.PUSHCONSTINT n            -> Pushconst n
+    | OByteLib.Instr.NEGINT                    -> Negint
+    | OByteLib.Instr.ADDINT                    -> Addint
+    | OByteLib.Instr.SUBINT                    -> Subint
+    | OByteLib.Instr.MULINT                    -> Mulint
+    | OByteLib.Instr.DIVINT                    -> Divint
+    | OByteLib.Instr.MODINT                    -> Modint
+    | OByteLib.Instr.ANDINT                    -> Andint
+    | OByteLib.Instr.ORINT                     -> Orint
+    | OByteLib.Instr.XORINT                    -> Xorint
+    | OByteLib.Instr.LSLINT                    -> Lslint
+    | OByteLib.Instr.LSRINT                    -> Lsrint
+    | OByteLib.Instr.ASRINT                    -> Asrint
+    | OByteLib.Instr.EQ                        -> Eq
+    | OByteLib.Instr.NEQ                       -> Neq
+    | OByteLib.Instr.LTINT                     -> Ltint
+    | OByteLib.Instr.LEINT                     -> Leint
+    | OByteLib.Instr.GTINT                     -> Gtint
+    | OByteLib.Instr.GEINT                     -> Geint
+    | OByteLib.Instr.OFFSETINT n               -> Offsetint n
+    | OByteLib.Instr.OFFSETREF n               -> Offsetint n
+    | OByteLib.Instr.ISINT                     -> Isint
+    | OByteLib.Instr.GETMETHOD                 -> Getmethod
+    | OByteLib.Instr.BEQ (n, ptr)              -> Beq (n, make_ptr ptr)
+    | OByteLib.Instr.BNEQ (n, ptr)             -> Bneq (n, make_ptr ptr)
+    | OByteLib.Instr.BLTINT (n, ptr)           -> Blint (n, make_ptr ptr)
+    | OByteLib.Instr.BLEINT (n, ptr)           -> Bleint (n, make_ptr ptr)
+    | OByteLib.Instr.BGTINT (n, ptr)           -> Bgtint (n, make_ptr ptr)
+    | OByteLib.Instr.BGEINT (n, ptr)           -> Bgeint (n, make_ptr ptr)
+    | OByteLib.Instr.ULTINT                    -> Ultint
+    | OByteLib.Instr.UGEINT                    -> Ugeint
+    | OByteLib.Instr.BULTINT (n, ptr)          -> Bultint (n, make_ptr ptr)
+    | OByteLib.Instr.BUGEINT (n, ptr)          -> Bugeint (n, make_ptr ptr)
+    | OByteLib.Instr.GETPUBMET (tag, cache)    -> Getpubmet (tag, cache)
+    | OByteLib.Instr.GETDYNMET                 -> Getdynmet
+    | OByteLib.Instr.STOP                      -> Stop
+    | OByteLib.Instr.EVENT                     -> Event
+    | OByteLib.Instr.BREAK                     -> Break
+    | OByteLib.Instr.RERAISE                   -> Reraise
+    | OByteLib.Instr.RAISE_NOTRACE             -> Raisenotrace in
+  { old_addr = instr_ind; new_addr = -1; bc = bc }
 ;;
 
 let opcode_of_bc bc =

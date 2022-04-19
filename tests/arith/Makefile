@@ -14,7 +14,7 @@ TARGETS = mul div mod
 all: $(TARGETS)
 
 %: %.ml
-	ocamlopt -w Ae -warn-error A -safe-string -strict-formats -strict-sequence $< -o $@
+	ocamlopt -w @a-4-70 -warn-error A -safe-string -strict-formats -strict-sequence $< -o $@
 
 clean:
 	@rm -f *~ *.cmx *.cmi *.o $(TARGETS)

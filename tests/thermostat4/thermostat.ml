@@ -146,15 +146,26 @@ let update_ctemp () =
 
 (***)
 
-let prop = ref 0;;
+let prop = ref 5;;
+let flag = ref false;;
 
 let update_prop () =
-  let delta = min 10 (max (-10) (!ctemp - !wtemp)) in
-  let delta2 = if delta < 0 then -delta * delta else delta * delta in
-  let offset = min 10 delta2 in (* ??? *)
-  let new_prop = min 100 (max 0 (!prop + offset)) in
-  prop := new_prop;
-  new_prop / 10
+  if !ctemp < !wtemp then (
+    if !flag then (
+      if !prop < 10 then incr prop;
+      flag := false;
+    );
+    10
+  ) else if !ctemp > !wtemp then (
+    if !flag then (
+      if !prop > 0 then decr prop;
+      flag := false;
+    );
+    0
+  ) else (
+    flag := true;
+    !prop
+  )
 ;;
 
 let reset_prop () = prop := 0;;

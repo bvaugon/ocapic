@@ -65,6 +65,9 @@ _build/
 /tests/thermostat1/thermostat
 /tests/thermostat2/thermostat
 /tests/thermostat3/thermostat
+/tests/thermostat3/eeprom.data
+/tests/thermostat4/thermostat
+/tests/thermostat4/eeprom.data
 /tests/timer/timer
 
 /lib/18f1220/

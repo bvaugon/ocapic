@@ -18,7 +18,7 @@ EXTRA = $(LIB)/extra
 LCD = $(SRC)/simulator/lcd/_build
 LCD_MODS = \
   types.cmx,config.cmx,cgrom.cmx,cgram.cmx,ddram.cmx,display.cmx,proto.cmx
-CFLAGS = -thread,-I,$(EXTRA),-I,$(LCD)
+CFLAGS = -thread,-I,$(EXTRA),-I,$(LCD),-I,+../graphics
 LFLAGS = $(CFLAGS),unix.cmxa,graphics.cmxa,threads.cmxa,simul.cmx,$(LCD_MODS)
 OPTIONS = -cflags $(CFLAGS) -lflags $(LFLAGS)
 

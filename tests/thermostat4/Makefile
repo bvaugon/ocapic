@@ -10,10 +10,7 @@
 ###########################################################################
 
 include ../../etc/TestsMakefile.conf
-
-OCAMLFLAGS = -w @a-4-70 -warn-error A -safe-string -strict-formats -strict-sequence
-OCAMLC = $(shell $(OCAPIC) -ocamlc)
-BASE = objs
+BASE = thermostat
 PIC = 18f4620
 
 all: $(BASE).hex
@@ -21,27 +18,19 @@ all: $(BASE).hex
 $(BASE).hex: $(BASE).asm
 	gpasm -y $(BASE).asm
 
-$(BASE) $(BASE).asm: objs.cmo exts.o exts.asm
-	$(OCAPIC) $(PIC) -stack-size 3 -heap-size 11 -gc MARK_AND_COMPACT \
-	  exts.o objs.cmo $$($(OCAPIC) -where)/default-config.asm exts.asm
-
-%.o: %.c
-	$(OCAMLC) $(OCAMLFLAGS) -c $<
-
-%.cmo: %.ml
-	$(OCAPIC) $(PIC) -c $<
+$(BASE) $(BASE).asm: $(BASE).ml
+	$(OCAPIC) $(PIC) -stack-size 3 -heap-size 11 -gc MARK_AND_COMPACT $(BASE).ml $$($(OCAPIC) -where)/default-config.asm
 
 simul1: $(BASE)
-	./$(BASE) 'ocapic_lcd_simulator 30x2 e=RD0 rs=RD2 rw=RD1 bus=PORTB'
+	./$(BASE) 'ocapic_circuit_simulator circuit.txt'
 
 simul2: $(BASE).hex
-	ocasim $(BASE).hex \
-	  'ocapic_lcd_simulator 30x2 e=RD0 rs=RD2 rw=RD1 bus=PORTB'
+	ocasim $(BASE).hex 'ocapic_circuit_simulator circuit.txt'
 
 prog: $(BASE).hex
 	picprog $(BASE).hex
 
 clean:
-	@rm -f *~ *.o *.cmo *.cmi *.hex *.cod *.lst $(BASE).asm $(BASE)
+	@rm -f *~ *.o *.cmo *.cmi *.hex *.cod *.lst $(BASE).asm $(BASE) eeprom.data
 
 .PHONY: all simul1 simul2 prog clean
